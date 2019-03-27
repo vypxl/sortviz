@@ -8,17 +8,35 @@
 #include <glad/glad.h>
 #include "SFML/Graphics.hpp"
 
-const int SIZE = 100000;
+const int SIZE = 10000;
 const float RADIUS = 0.8;
 const double M_TAU = M_PI * 2;
 
+const int DELAY = 1;
+
 class Sort {
-public:
-    float data[SIZE];
-    float indices[SIZE];
+private:
     std::thread t;
     bool terminate = false;
 
+    void loop() {
+        while (true) {
+            if (terminate) return;
+            step();
+        }
+    }
+
+protected:
+    void delay() {
+        if (DELAY > 0) std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
+    }
+
+    virtual void step() {};
+
+public:
+    float data[SIZE];
+    float indices[SIZE];
+    
     Sort() {
         for (int i = 0; i < SIZE; i++) {
             data[i] = (float)i;
@@ -29,12 +47,7 @@ public:
     void shuffle() {
         std::random_shuffle(std::begin(data), std::end(data));
     }
-    void loop() {
-        while (true) {
-            if (terminate) return;
-            step();
-        }
-    }
+    
     void start() {
         t = std::thread(&Sort::loop, this);
     }
@@ -42,16 +55,12 @@ public:
         terminate = true;
         t.join();
     }
+    
     virtual void reset() {};
-    virtual void step() {};
 };
 
 class SelectionSort : public Sort {
-public:
-    int idx = 0;
-    void reset() {
-        idx = 0;
-    }
+protected:
     void step() {
         if (idx >= SIZE) {
             return;
@@ -69,6 +78,12 @@ public:
         data[m] = tmp;
 
         idx++;
+        delay();
+    }
+public:
+    int idx = 0;
+    void reset() {
+        idx = 0;
     }
 };
 
