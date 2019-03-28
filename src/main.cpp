@@ -8,84 +8,9 @@
 #include <glad/glad.h>
 #include "SFML/Graphics.hpp"
 
-const int SIZE = 10000;
-const float RADIUS = 0.8;
-const double M_TAU = M_PI * 2;
-
-const int DELAY = 1;
-
-class Sort {
-private:
-    std::thread t;
-    bool terminate = false;
-
-    void loop() {
-        while (true) {
-            if (terminate) return;
-            step();
-        }
-    }
-
-protected:
-    void delay() {
-        if (DELAY > 0) std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
-    }
-
-    virtual void step() {};
-
-public:
-    float data[SIZE];
-    float indices[SIZE];
-    
-    Sort() {
-        for (int i = 0; i < SIZE; i++) {
-            data[i] = (float)i;
-            indices[i] = (float)i;
-        }
-    }
-
-    void shuffle() {
-        std::random_shuffle(std::begin(data), std::end(data));
-    }
-    
-    void start() {
-        t = std::thread(&Sort::loop, this);
-    }
-    void stop() {
-        terminate = true;
-        t.join();
-    }
-    
-    virtual void reset() {};
-};
-
-class SelectionSort : public Sort {
-protected:
-    void step() {
-        if (idx >= SIZE) {
-            return;
-        }
-        int m = idx;
-        
-        for (int i = idx; i < SIZE; i++) {
-            if (data[i] < data[m]) {
-                m = i;
-            }
-        }
-
-        float tmp = data[idx];
-        data[idx] = data[m];
-        data[m] = tmp;
-
-        idx++;
-        delay();
-    }
-public:
-    int idx = 0;
-    void reset() {
-        idx = 0;
-    }
-};
+#include "config.hpp"
+#include "sort.hpp"
+#include "sorts.hpp"
 
 class Viz {
 private:
@@ -114,7 +39,7 @@ private:
         glClearColor(0.f, 0.f, 0.0f, 0.f);
         drawData();
         window.display();
-        printf("frame %d\n", frame++);
+        // printf("frame %d\n", frame++);
     }
 
     void drawData() {
@@ -176,7 +101,7 @@ public:
         glBindVertexArray(vaoId);
 
         // Initialize shaders
-        if (!shader.loadFromFile("src/vertex_shader.vert", "src/fragment_shader.frag")) {
+        if (!shader.loadFromFile("shaders/vertex_shader.vert", "shaders/fragment_shader.frag")) {
             std::cerr << "Failed to load shaders" << std::endl;
             return -1;
         }
@@ -218,9 +143,11 @@ public:
                         case sf::Keyboard::Q:
                             running = false;
                             break;
-                        case sf::Keyboard::Space:
-                            sort->shuffle();
+                        case sf::Keyboard::S:
                             sort->reset();
+                            break;
+                        case sf::Keyboard::Space:
+                            sort->toggle_pause();
                             break;
                         default:
                             break;
@@ -238,7 +165,7 @@ public:
 };
 
 int main() {
-    SelectionSort sort;
+    QuickSort sort;
     Viz v(&sort);
     if (v.init() != 0) {
         std::cerr << "Failed to initialize" << std::endl;
