@@ -1,7 +1,7 @@
 #pragma once
 #include <stack>
-// #include <pair>
 #include "sort.hpp"
+#include "arraywrapper.hpp"
 
 class SelectionSort : public Sort {
 private:
@@ -9,7 +9,9 @@ private:
 protected:
     void step();
 public:
+    SelectionSort(ArrayWrapper *ary) : Sort(ary) {};
     void reset();
+    void dispose();
 };
 
 class BubbleSort : public Sort {
@@ -19,7 +21,9 @@ private:
 protected:
     void step();
 public:
+    BubbleSort(ArrayWrapper *ary) : Sort(ary) {};
     void reset();
+    void dispose();
 };
 
 class QuickSort : public Sort {
@@ -31,5 +35,7 @@ private:
 protected:
     void step();
 public:
+    QuickSort(ArrayWrapper *ary) : Sort(ary) {};
     void reset();
+    void dispose();
 };

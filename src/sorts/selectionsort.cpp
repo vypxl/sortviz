@@ -1,24 +1,22 @@
 #include "sort.hpp"
 #include "sorts.hpp"
-#include "config.hpp"
 
 void SelectionSort::step() {
-    if (idx >= SIZE) return;
+    if (idx >= data->size()) return;
     int m = idx;
     
-    for (int i = idx; i < SIZE; i++) {
-        if (data[i] < data[m]) {
+    for (int i = idx; i < data->size(); i++) {
+        if (data->compare(i, m) < 0) {
             m = i;
         }
     }
 
-    swap(idx, m);
+    data->swap(idx, m);
 
     idx++;
-    delay();
 }
 
 void SelectionSort::reset() {
-    shuffle();
     idx = 0;
 }
+

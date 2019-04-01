@@ -1,30 +1,21 @@
 #pragma once
-
 #include <thread>
-#include <mutex>
-
-#include "config.hpp"
+#include "arraywrapper.hpp"
 
 class Sort {
 private:
     std::thread t;
     bool terminate = false;
     bool paused = false;
-
     void loop();
 
 protected:
-    void delay(int millis = DELAY);
-    void swap(int i, int j);
-    void shuffle();
-    virtual void step() {};
+    void delay(int millis);
+    virtual void step() = 0;
 
 public:
-    float data[SIZE];
-    float indices[SIZE];
-    
-    Sort();
-
+    Sort(ArrayWrapper *ary);
+    ArrayWrapper *data;
 
     void start();
     void pause();
@@ -32,5 +23,5 @@ public:
     void toggle_pause();
     void stop();
     
-    virtual void reset() {};
+    virtual void reset() = 0;
 };

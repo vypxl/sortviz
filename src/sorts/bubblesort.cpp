@@ -1,25 +1,23 @@
 #include "sort.hpp"
 #include "sorts.hpp"
-#include "config.hpp"
+#include <iostream>
 
 void BubbleSort::step() {
     if (!swapped) return;
-    
+
+    swapped = false;
     for (int i = 0; i < n; i++) {
-        if (data[i] > data[i+1]) {
-            swap(i, i+1);
+        if (data->compare(i, i+1) > 0) {
+            data->swap(i, i+1);
             swapped = true;
-        } else {
-            swapped = false;
         }
     }
 
     n--;
-    delay();
 }
 
 void BubbleSort::reset() {
-    shuffle();
     swapped = true;
-    n = SIZE;
+    n = data->size();
 }
+
