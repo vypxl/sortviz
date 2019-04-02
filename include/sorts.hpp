@@ -1,5 +1,7 @@
 #pragma once
+
 #include <stack>
+
 #include "sort.hpp"
 #include "arraywrapper.hpp"
 

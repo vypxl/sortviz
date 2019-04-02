@@ -1,5 +1,7 @@
 #pragma once
+
 #include <thread>
+
 #include "arraywrapper.hpp"
 
 class Sort {

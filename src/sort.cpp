@@ -1,7 +1,7 @@
 #include <thread>
 
-#include "sort.hpp"
 #include "arraywrapper.hpp"
+#include "sort.hpp"
 
 Sort::Sort(ArrayWrapper *ary) {
     this->data = ary;

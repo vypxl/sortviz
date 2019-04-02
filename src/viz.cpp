@@ -1,22 +1,30 @@
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <thread>
 
 #include "viz.hpp"
 
 void Viz::update() {
-    std::cout << "frame " << (stats.frame++) << "\n\t" << sort->data->stats << std::endl;
+    std::ostringstream str;
+    str << "frame " << (stats.frame++) << " " << data->stats;
+    std::string result = str.str();
+    infotext.setString(result);
 }
 
 void Viz::draw() {
+    sf::Shader::bind(&shader);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.1f, 0.1f, 0.1f, 0.f);
     drawData();
+    window.pushGLStates();
+    window.resetGLStates();
+    window.draw(infotext);
+    window.popGLStates();
     window.display();
 }
 
 void Viz::drawData() {
-
     glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
     glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->data(), GL_STREAM_DRAW);
     glVertexAttribPointer(attr_x, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -30,6 +38,10 @@ void Viz::drawData() {
 
     glDisableVertexAttribArray(attr_x);
     glDisableVertexAttribArray(attr_i);
+
+    // fix stupid sfml
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 int Viz::init() {
@@ -44,6 +56,18 @@ int Viz::init() {
         desktop.height/2 - window.getSize().y/2
     ));
 
+    // Initialize infotext
+    if (!font.loadFromFile("res/RobotoMono-Regular.ttf")) {
+        std::cerr << "failed to load font" << std::endl;
+    }
+    infotext.setFont(font);
+    infotext.setPosition(10, 10);
+    infotext.setFillColor(sf::Color::White);
+    infotext.setCharacterSize(15);
+    infotext.setString("test");
+
+    // window.draw(infotext);
+
     // Initialize glad
     if (!gladLoadGL()) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
@@ -53,6 +77,7 @@ int Viz::init() {
     // Initialize VAOs
     glGenVertexArrays(1, &vaoId);
     glBindVertexArray(vaoId);
+    
     
     setDataSize(1000);
     return 0;

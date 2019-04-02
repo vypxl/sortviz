@@ -2,11 +2,12 @@
 #include <stack>
 
 int QuickSort::partition(int lo, int hi) {
-    int x = data->get(hi);
+    // int x = data->get(hi);
     int i = lo - 1;
 
     for (int j = lo; j < hi; j++) {
-        if (data->get(j) <= x) {
+        // if (data->get(j) <= x) {
+        if (data->compare(j, hi) <= 0) {
             i++;
             data->swap(i, j);
         }

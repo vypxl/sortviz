@@ -8,6 +8,7 @@ private:
     float *_indices; /// as input to shaders
 public:
     struct Stats{
+        unsigned int size = 0;
         unsigned long long int reads = 0;
         unsigned long long int writes = 0;
         unsigned long long int compares = 0;

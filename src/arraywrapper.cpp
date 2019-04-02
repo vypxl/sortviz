@@ -5,6 +5,7 @@
 
 ArrayWrapper::ArrayWrapper(int size) {
     _size = size;
+    stats.size = size;
     _data = new float[size];
     _indices = new float[size];
 
@@ -55,6 +56,6 @@ void ArrayWrapper::shuffle() {
 }
 
 std::ostream& operator<<(std::ostream& o, const ArrayWrapper::Stats& stats) {
-    return o << "Stats: r/w: " << stats.reads << '/' << stats.writes << "; compares: " << stats.compares << "; swaps: " << stats.swaps << ".";
+    return o << "size:" << stats.size << " reads / writes: " << stats.reads << " / " << stats.writes << "; compares: " << stats.compares << "; swaps: " << stats.swaps << ".";
 }
 

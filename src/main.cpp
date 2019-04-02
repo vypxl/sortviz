@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "sorts.hpp"
-
 #include "viz.hpp"
 
 
@@ -16,3 +15,5 @@ int main() {
     v.loop();
     return 0;
 }
+
+// Nextup, define sizes, styles and sorts and create keys to cycle through them

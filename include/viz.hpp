@@ -36,8 +36,10 @@ private:
     int width = 1920;
     int height = 1080;
     int current_style;
-    sf::Window window;
+    sf::RenderWindow window;
     sf::Shader shader;
+    sf::Font font;
+    sf::Text infotext;
 
     uint vaoId;
     uint dataBuffer;
