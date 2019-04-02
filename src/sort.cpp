@@ -1,5 +1,4 @@
 #include <thread>
-#include <iostream>
 
 #include "sort.hpp"
 #include "arraywrapper.hpp"

@@ -1,10 +1,8 @@
 #pragma once
 
-#include <string>
 #include "SFML/Window.hpp"
-#include "SFML/System.hpp"
-#include <glad/glad.h>
 #include "SFML/Graphics.hpp"
+#include <glad/glad.h>
 
 #include "sort.hpp"
 #include "arraywrapper.hpp"
@@ -33,7 +31,6 @@ private:
         Style{ "_.vert", "_.frag", GL_POINTS }
     };
 
-    int data_size = 1000;
     ArrayWrapper *data = nullptr;
     bool running = false;
     int width = 1920;
@@ -71,6 +68,5 @@ public:
         this->sort = new T(data);
     };
     void setDataSize(int newsize);
-    int getDataSize() { return data_size; }
     void loop();
 };

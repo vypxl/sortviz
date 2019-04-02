@@ -1,6 +1,4 @@
-#include "sort.hpp"
 #include "sorts.hpp"
-#include <iostream>
 
 void BubbleSort::step() {
     if (!swapped) return;

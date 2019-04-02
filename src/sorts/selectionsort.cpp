@@ -1,4 +1,3 @@
-#include "sort.hpp"
 #include "sorts.hpp"
 
 void SelectionSort::step() {

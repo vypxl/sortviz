@@ -1,12 +1,6 @@
 #include <iostream>
-#include <iostream>
 #include <algorithm>
-#include <math.h>
 #include <thread>
-
-#include "config.hpp"
-#include "sort.hpp"
-#include "sorts.hpp"
 
 #include "viz.hpp"
 
@@ -24,7 +18,7 @@ void Viz::draw() {
 void Viz::drawData() {
 
     glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sort->data->size() * sizeof(float), sort->data->data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->data(), GL_STREAM_DRAW);
     glVertexAttribPointer(attr_x, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
     glVertexAttribPointer(attr_i, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -32,7 +26,7 @@ void Viz::drawData() {
     glEnableVertexAttribArray(attr_x);
     glEnableVertexAttribArray(attr_i);
 
-    glDrawArrays(styles[current_style].gl_draw_method, 0, SIZE);
+    glDrawArrays(styles[current_style].gl_draw_method, 0, data->size());
 
     glDisableVertexAttribArray(attr_x);
     glDisableVertexAttribArray(attr_i);
@@ -60,13 +54,12 @@ int Viz::init() {
     glGenVertexArrays(1, &vaoId);
     glBindVertexArray(vaoId);
     
-    setDataSize(data_size);
+    setDataSize(1000);
     return 0;
 }
 
-void Viz::setDataSize(int newsize) {
+void Viz::setDataSize(int data_size) {
     delete data;
-    data_size = newsize;
     // Initialize data and buffers
     data = new ArrayWrapper(data_size);
     // data buffer
@@ -79,6 +72,7 @@ void Viz::setDataSize(int newsize) {
     glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->indices(), GL_STATIC_DRAW);
 
+    shader.setUniform("size", float(data->size()));
 }
 
 void Viz::changeStyle(Viz::Styles which) {
@@ -90,8 +84,7 @@ void Viz::changeStyle(Viz::Styles which) {
     attr_x = glGetAttribLocation(shader.getNativeHandle(), "x");
     attr_i = glGetAttribLocation(shader.getNativeHandle(), "i");
 
-    shader.setUniform("size", float(SIZE));
-    shader.setUniform("radius", RADIUS);
+    shader.setUniform("size", float(data->size()));
     sf::Shader::bind(&shader);
 }
 
