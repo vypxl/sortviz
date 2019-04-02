@@ -1,9 +1,9 @@
 #version 330 core
 
 #define TWO_PI 6.28318530718
+#define radius 0.8
 
 uniform float size;
-uniform float radius;
 
 in float x;
 in float i;
