@@ -15,6 +15,7 @@ protected:
 
 public:
     Sort(ArrayWrapper *ary);
+    ~Sort();
     ArrayWrapper *data;
 
     void start();

@@ -8,6 +8,10 @@ Sort::Sort(ArrayWrapper *ary) {
     this->data = ary;
 }
 
+Sort::~Sort() {
+    stop();
+}
+
 void Sort::loop() {
     while (true) {
         if (terminate) return;

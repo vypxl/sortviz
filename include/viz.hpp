@@ -7,7 +7,7 @@
 #include "SFML/Graphics.hpp"
 
 #include "sort.hpp"
-
+#include "arraywrapper.hpp"
 
 
 class Viz {
@@ -33,6 +33,8 @@ private:
         Style{ "_.vert", "_.frag", GL_POINTS }
     };
 
+    int data_size = 1000;
+    ArrayWrapper *data = nullptr;
     bool running = false;
     int width = 1920;
     int height = 1080;
@@ -60,6 +62,15 @@ public:
     /// load a shader from the list
     void changeStyle(Viz::Styles which);
     /// change current sort
-    void setSort(Sort *sort);
+    template <typename T>
+    void setSort() {
+        static_assert(std::is_base_of<Sort, T>::value, "setSort must receive a Sort subclass!");
+
+        // if (sort != nullptr) sort->stop();
+        delete sort;
+        this->sort = new T(data);
+    };
+    void setDataSize(int newsize);
+    int getDataSize() { return data_size; }
     void loop();
 };

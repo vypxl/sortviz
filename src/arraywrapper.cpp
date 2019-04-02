@@ -15,8 +15,8 @@ ArrayWrapper::ArrayWrapper(int size) {
 }
 
 ArrayWrapper::~ArrayWrapper() {
-    delete _data;
-    delete _indices;
+    delete[] _data;
+    delete[] _indices;
 }
 
 void ArrayWrapper::delay(int micros) {

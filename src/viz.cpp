@@ -60,7 +60,25 @@ int Viz::init() {
     glGenVertexArrays(1, &vaoId);
     glBindVertexArray(vaoId);
     
+    setDataSize(data_size);
     return 0;
+}
+
+void Viz::setDataSize(int newsize) {
+    delete data;
+    data_size = newsize;
+    // Initialize data and buffers
+    data = new ArrayWrapper(data_size);
+    // data buffer
+    glGenBuffers(1, &dataBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
+    glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->data(), GL_STREAM_DRAW);
+
+    // index buffer
+    glGenBuffers(1, &indexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->indices(), GL_STATIC_DRAW);
+
 }
 
 void Viz::changeStyle(Viz::Styles which) {
@@ -75,22 +93,6 @@ void Viz::changeStyle(Viz::Styles which) {
     shader.setUniform("size", float(SIZE));
     shader.setUniform("radius", RADIUS);
     sf::Shader::bind(&shader);
-}
-
-void Viz::setSort(Sort *new_sort) {
-    if (sort != nullptr) sort->stop();
-    this->sort = new_sort;
-
-    // Initialize buffers
-    // data buffer
-    glGenBuffers(1, &dataBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sort->data->size() * sizeof(float), sort->data->data(), GL_STREAM_DRAW);
-
-    // index buffer
-    glGenBuffers(1, &indexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sort->data->size() * sizeof(float), sort->data->indices(), GL_STATIC_DRAW);
 }
 
 void Viz::loop() {

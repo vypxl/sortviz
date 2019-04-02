@@ -13,16 +13,13 @@
 
 
 int main() {
-    ArrayWrapper ary(1000);
-    QuickSort sort(&ary);
     Viz v;
     if (v.init() != 0) {
         std::cerr << "Failed to initialize" << std::endl;
         return -1;
     };
     v.changeStyle(Viz::Styles::Colorloop);
-    v.setSort(&sort);
+    v.setSort<QuickSort>();
     v.loop();
-    sort.stop();
     return 0;
 }
