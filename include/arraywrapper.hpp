@@ -14,14 +14,14 @@ public:
         unsigned long long int compares = 0;
         unsigned long long int swaps = 0;
 
+        Stats() {
+            reset();
+        }
+
         void reset() {
             reads = 0; writes = 0; compares = 0; swaps = 0;
         }
     };
-
-    const int read_delay = 1;
-    const int write_delay = 1;
-
     Stats stats;
 
     ArrayWrapper(int size);

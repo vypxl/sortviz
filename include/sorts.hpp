@@ -10,9 +10,9 @@ private:
     int idx = 0;
 protected:
     void step();
+    void _reset();
 public:
     SelectionSort(ArrayWrapper *ary) : Sort(ary) {};
-    void reset();
     void dispose();
 };
 
@@ -22,9 +22,9 @@ private:
     bool swapped = false;
 protected:
     void step();
+    void _reset();
 public:
     BubbleSort(ArrayWrapper *ary) : Sort(ary) {};
-    void reset();
     void dispose();
 };
 
@@ -36,8 +36,8 @@ private:
     int partition(int lo, int hi);
 protected:
     void step();
+    void _reset();
 public:
     QuickSort(ArrayWrapper *ary) : Sort(ary) {};
-    void reset();
     void dispose();
 };

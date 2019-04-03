@@ -1,7 +1,10 @@
 #include "sorts.hpp"
 
 void BubbleSort::step() {
-    if (!swapped) return;
+    if (!swapped) {
+        finished = true;
+        return;
+    }
 
     swapped = false;
     for (int i = 0; i < n; i++) {
@@ -12,9 +15,11 @@ void BubbleSort::step() {
     }
 
     n--;
+    stats.steps++;
+    delay(10000 / data->size());
 }
 
-void BubbleSort::reset() {
+void BubbleSort::_reset() {
     swapped = true;
     n = data->size();
 }

@@ -20,7 +20,10 @@ int QuickSort::partition(int lo, int hi) {
 void QuickSort::step() {
     if (locked) return;
 
-    if (stk.size() == 0) return;
+    if (stk.size() == 0) {
+        finished = true;
+        return;
+    };
     auto cur = stk.top();
     stk.pop();
     if (cur.first >= cur.second) return;
@@ -28,9 +31,12 @@ void QuickSort::step() {
     int p = partition(cur.first, cur.second);
     stk.push(std::pair<int, int>(cur.first, p - 1));
     stk.push(std::pair<int, int>(p + 1, cur.second));
+
+    stats.steps++;
+    delay(10000 / data->size());
 }
 
-void QuickSort::reset() {
+void QuickSort::_reset() {
     locked = true;
     while(stk.size() != 0) stk.pop();
     stk.push(std::pair<int, int>(0, data->size() - 1));

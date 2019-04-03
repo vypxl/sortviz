@@ -16,4 +16,8 @@ int main() {
     return 0;
 }
 
-// Nextup, define sizes, styles and sorts and create keys to cycle through them
+// Next steps
+// Make delay time configurable
+// Differentiate between per-step and per-operation timing (and make it switchable of course)
+// define sizes, styles and sorts and create keys to cycle through them
+

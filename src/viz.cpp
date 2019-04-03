@@ -7,7 +7,7 @@
 
 void Viz::update() {
     std::ostringstream str;
-    str << "frame " << (stats.frame++) << " " << data->stats;
+    str << data->stats << std::endl << sort->stats;
     std::string result = str.str();
     infotext.setString(result);
 }

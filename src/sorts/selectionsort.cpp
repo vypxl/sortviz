@@ -1,7 +1,10 @@
 #include "sorts.hpp"
 
 void SelectionSort::step() {
-    if (idx >= data->size()) return;
+    if (idx >= data->size()) {
+        finished = true;
+        return;
+    }
     int m = idx;
     
     for (int i = idx; i < data->size(); i++) {
@@ -13,9 +16,11 @@ void SelectionSort::step() {
     data->swap(idx, m);
 
     idx++;
+    stats.steps++;
+    delay(10000 / data->size());
 }
 
-void SelectionSort::reset() {
+void SelectionSort::_reset() {
     idx = 0;
 }
 
