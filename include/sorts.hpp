@@ -1,9 +1,15 @@
-#pragma once
+#ifndef __sorts_hpp_
+#define __sorts_hpp_
 
+#include <iostream>
 #include <stack>
 
 #include "sort.hpp"
 #include "arraywrapper.hpp"
+
+//////////////////////////////////////////////////////////
+// Look for /**/ to find where to insert extension code //
+//////////////////////////////////////////////////////////
 
 class SelectionSort : public Sort {
 private:
@@ -41,3 +47,31 @@ public:
     QuickSort(ArrayWrapper *ary) : Sort(ary) {};
     void dispose();
 };
+
+
+/* Add new Sort definition here*/
+
+
+namespace Sorts{
+    enum Sorts {
+        SelectionSort,
+        BubbleSort,
+        QuickSort,
+
+        /* Register new sort here */
+
+        /* DO NOT TOUCH */ __count_
+    };
+
+    const std::string names[3] {
+        "Selection Sort",
+        "Bubble Sort",
+        "Quick Sort",
+
+        /* Set new sort display name here */
+    };
+    
+    Sort* create(Sorts which, ArrayWrapper *data);
+}
+
+#endif

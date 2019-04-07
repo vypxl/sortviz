@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <ostream>
+#include <iomanip>
 #include <chrono>
 #include <thread>
 #include "arraywrapper.hpp"
@@ -49,11 +50,11 @@ void ArrayWrapper::shuffle() {
 }
 
 std::ostream& operator<<(std::ostream& o, const ArrayWrapper::Stats& stats) {
-    return o 
-        << "size:" << stats.size
-        << "; reads / writes: " << stats.reads << " / " << stats.writes
-        << "; compares: " << stats.compares
-        << "; swaps: " << stats.swaps
+    return o << std::left
+        << "size:  " << std::setw(8) << stats.size
+        << " | reads / writes: " << std::setw(8) << stats.reads << " / " << std::setw(8) << stats.writes
+        << " | compares: " << std::setw(8) << stats.compares
+        << " | swaps: " << std::setw(8) << stats.swaps
         ;
 }
 

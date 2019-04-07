@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __sort_hpp_
+#define __sort_hpp_
 
 #include <thread>
 #include <chrono>
@@ -23,13 +24,14 @@ public:
 private:
     std::thread t;
     std::chrono::system_clock::time_point starttime;
+    std::chrono::system_clock::time_point pausetime;
     bool terminate = false;
     bool paused = false;
     void loop();
 
 protected:
     bool finished = false;
-    void delay(int millis);
+    void delay(int millis, bool track_in_stats = true);
     virtual void step() = 0;
     virtual void _reset() = 0;
 
@@ -49,3 +51,5 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& o, const Sort::Stats& stats);
+
+#endif

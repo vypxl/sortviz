@@ -10,14 +10,6 @@ int main() {
         std::cerr << "Failed to initialize" << std::endl;
         return -1;
     };
-    v.changeStyle(Viz::Styles::Colorloop);
-    v.setSort<QuickSort>();
     v.loop();
     return 0;
 }
-
-// Next steps
-// Make delay time configurable
-// Differentiate between per-step and per-operation timing (and make it switchable of course)
-// define sizes, styles and sorts and create keys to cycle through them
-

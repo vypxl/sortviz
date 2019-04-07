@@ -23,4 +23,3 @@ void SelectionSort::step() {
 void SelectionSort::_reset() {
     idx = 0;
 }
-

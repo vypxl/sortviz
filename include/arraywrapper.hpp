@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __arraywrapper_hpp_
+#define __arraywrapper_hpp_
+
 #include <ostream>
 
 class ArrayWrapper {
@@ -42,3 +44,4 @@ public:
 
 std::ostream& operator<<(std::ostream& o, const ArrayWrapper::Stats& stats);
 
+#endif

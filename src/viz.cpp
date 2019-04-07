@@ -7,7 +7,13 @@
 
 void Viz::update() {
     std::ostringstream str;
-    str << data->stats << std::endl << sort->stats;
+    str 
+        << "Sorting Algorithm: " << Sorts::names[current_sort]
+        << " | Style: " << styleNames[current_style] 
+        << std::endl 
+        << data->stats 
+        << std::endl 
+        << sort->stats;
     std::string result = str.str();
     infotext.setString(result);
 }
@@ -27,9 +33,9 @@ void Viz::draw() {
 void Viz::drawData() {
     glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
     glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->data(), GL_STREAM_DRAW);
-    glVertexAttribPointer(attr_x, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(attr_x, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
-    glVertexAttribPointer(attr_i, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(attr_i, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glEnableVertexAttribArray(attr_x);
     glEnableVertexAttribArray(attr_i);
@@ -79,12 +85,14 @@ int Viz::init() {
     glBindVertexArray(vaoId);
     
     
-    setDataSize(1000);
+    setDataSize(dataSizes[current_data_size]);
+    setSort(Sorts::SelectionSort);
+    changeStyle(Styles::Varietyloop);
     return 0;
 }
 
 void Viz::setDataSize(int data_size) {
-    delete data;
+    ArrayWrapper *old_data = data;
     // Initialize data and buffers
     data = new ArrayWrapper(data_size);
     // data buffer
@@ -98,6 +106,8 @@ void Viz::setDataSize(int data_size) {
     glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->indices(), GL_STATIC_DRAW);
 
     shader.setUniform("size", float(data->size()));
+    setSort(static_cast<Sorts::Sorts>(current_sort));
+    delete old_data;
 }
 
 void Viz::changeStyle(Viz::Styles which) {
@@ -113,6 +123,16 @@ void Viz::changeStyle(Viz::Styles which) {
     sf::Shader::bind(&shader);
 }
 
+void Viz::setSort(Sorts::Sorts which) {
+    if (sort != nullptr) sort->stop();
+    delete sort;
+    sort = Sorts::create(which, data);
+    sort->reset();
+    sort->start();
+}
+
+#define MODEQ(var, val) var = var < 0 ? val - abs(var % val) : var % val
+
 void Viz::loop() {
     running = true;
     while (running) {
@@ -121,18 +141,48 @@ void Viz::loop() {
             if (ev.type == sf::Event::Closed) running = false;
             if (ev.type == sf::Event::KeyPressed) {
                 switch (ev.key.code) {
-                    case sf::Keyboard::Q:
-                        running = false;
-                        break;
-                    case sf::Keyboard::S:
+                    case sf::Keyboard::Space:
                         sort->stop();
                         sort->data->shuffle();
                         sort->reset();
                         sort->data->stats.reset();
                         sort->start();
                         break;
-                    case sf::Keyboard::Space:
+                    case sf::Keyboard::P:
                         sort->toggle_pause();
+                        break;
+                    case sf::Keyboard::Escape:
+                        running = false;
+                        break;
+                    case sf::Keyboard::Up:
+                        current_style++;
+                        MODEQ(current_style, Styles::__count_);
+                        changeStyle(static_cast<Styles>(current_style));
+                        break;
+                    case sf::Keyboard::Down:
+                        current_style--;
+                        MODEQ(current_style, Styles::__count_);
+                        changeStyle(static_cast<Styles>(current_style));
+                        break;
+                    case sf::Keyboard::Left:
+                        current_sort--;
+                        MODEQ(current_sort, Sorts::__count_);
+                        setSort(static_cast<Sorts::Sorts>(current_sort));
+                        break;
+                    case sf::Keyboard::Right:
+                        current_sort++;
+                        MODEQ(current_sort, Sorts::__count_);
+                        setSort(static_cast<Sorts::Sorts>(current_sort));
+                        break;
+                    case sf::Keyboard::Q:
+                        current_data_size--;
+                        MODEQ(current_data_size, dataSizesCount);
+                        setDataSize(dataSizes[current_data_size]);
+                        break;
+                    case sf::Keyboard::E:
+                        current_data_size++;
+                        MODEQ(current_data_size, dataSizesCount);
+                        setDataSize(dataSizes[current_data_size]);
                         break;
                     default:
                         break;
@@ -142,7 +192,6 @@ void Viz::loop() {
 
         update();
         draw();
-
     }
 
     window.close();

@@ -1,12 +1,13 @@
-#pragma once
+#ifndef __viz_hpp_
+#define __viz_hpp_
 
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 #include <glad/glad.h>
 
 #include "sort.hpp"
+#include "sorts.hpp"
 #include "arraywrapper.hpp"
-
 
 class Viz {
 public:
@@ -15,8 +16,11 @@ public:
     };
 
     enum Styles {
-        Colorloop = 0,
-        None = 1
+        Varietyloop = 0,
+        VarietyDots = 1,
+
+        /* Register new style here */
+        /* DO NOT TOUCH */__count_
     };
 
 private:
@@ -27,15 +31,31 @@ private:
     };
 
     const Style styles[2] {
-        Style{ "shaders/colorloop.vert", "shaders/colorloop.frag", GL_LINE_LOOP },
-        Style{ "_.vert", "_.frag", GL_POINTS }
+        Style{ "shaders/varietyloop.vert", "shaders/varietyloop.frag", GL_LINE_LOOP },
+        Style{ "shaders/varietyloop.vert", "shaders/varietyloop.frag", GL_POINTS },
+
+        /* Define new style here */
     };
+
+    const std::string styleNames[2] {
+        "Variety Loop",
+        "Variety Points",
+
+        /* Set new style display name here */
+    };
+
+    static const int dataSizesCount = 7;
+    const int dataSizes[dataSizesCount] { 16, 256, 1000, 5000, 50000, 500000, 1000000 };
 
     ArrayWrapper *data = nullptr;
     bool running = false;
     int width = 1920;
     int height = 1080;
-    int current_style;
+    
+    int current_style = 0;
+    int current_sort = 0;
+    int current_data_size = 2;
+
     sf::RenderWindow window;
     sf::Shader shader;
     sf::Font font;
@@ -58,17 +78,12 @@ private:
 public:
     /// initialize the display
     int init();
-    /// load a shader from the list
+    /// load a visual style from the list
     void changeStyle(Viz::Styles which);
     /// change current sort
-    template <typename T>
-    void setSort() {
-        static_assert(std::is_base_of<Sort, T>::value, "setSort must receive a Sort subclass!");
-
-        // if (sort != nullptr) sort->stop();
-        delete sort;
-        this->sort = new T(data);
-    };
+    void setSort(Sorts::Sorts which);
     void setDataSize(int newsize);
     void loop();
 };
+
+#endif
