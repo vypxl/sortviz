@@ -6,10 +6,10 @@ FILES=$(wildcard src/*.cpp) $(wildcard src/sorts/*.cpp)
 
 build:
 	@mkdir -p out
-	@g++ -I include -o out/viz $(FILES) src/glad.c $(LIBS)
+	@g++ -I include -o out/sortviz $(FILES) src/glad.c $(LIBS)
 
 run: build
-	@out/viz
+	@out/sortviz
 
 clean:
 	@rm -r out/
