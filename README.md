@@ -12,8 +12,6 @@
      - Variety Loop
      - Variety Dots
 
- * Constant and per-operation delay
-
 ## How to build (Linux)
 You will need `make`, `gcc/g++`, `sfml` and `opengl` installed.
 
