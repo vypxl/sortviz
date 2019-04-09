@@ -2,7 +2,7 @@
 #define __sort_hpp_
 
 #include <thread>
-#include <chrono>
+#include <SDL/SDL_timer.h>
 
 #include "arraywrapper.hpp"
 
@@ -23,15 +23,15 @@ public:
     };
 private:
     std::thread t;
-    std::chrono::system_clock::time_point starttime;
-    std::chrono::system_clock::time_point pausetime;
+    unsigned int starttime;
+    unsigned int pausetime;
     bool terminate = false;
     bool paused = false;
     void loop();
 
 protected:
     bool finished = false;
-    void delay(int millis, bool track_in_stats = true);
+    void delay(unsigned int millis, bool track_in_stats = true);
     virtual void step() = 0;
     virtual void _reset() = 0;
 

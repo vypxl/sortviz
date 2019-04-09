@@ -6,7 +6,11 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <glad/glad.h>
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
+    #include <glad/glad.h>
+#endif
 
 #include "shader.hpp"
 

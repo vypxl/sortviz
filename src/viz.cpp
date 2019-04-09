@@ -3,6 +3,11 @@
 #include <algorithm>
 #include <thread>
 
+#ifdef __EMSCRIPTEN__
+    #include <emscripten.h>
+    #include <emscripten/html5.h>
+#endif
+
 #include "viz.hpp"
 
 void Viz::update() {
@@ -22,7 +27,6 @@ void Viz::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     font->renderText(infotext, 10, height - 26, 1.f);
-    // font->renderText("aa\nbb", 10, height - 100, .2f);
     drawData();
 
     SDL_GL_SwapBuffers();
@@ -45,7 +49,6 @@ void Viz::drawData() {
     glDisableVertexAttribArray(attr_i);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 }
 
 void Viz::drawInfoText() {
@@ -98,6 +101,13 @@ void Viz::drawInfoText() {
 }
 
 int Viz::init() {
+#ifdef __EMSCRIPTEN__
+    EmscriptenWebGLContextAttributes __attrs;
+    emscripten_webgl_init_context_attributes(&__attrs);
+    __attrs.majorVersion = 2; __attrs.minorVersion = 0;
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE __ctx = emscripten_webgl_create_context(0, &__attrs);
+    emscripten_webgl_make_context_current(__ctx);
+#endif
     // Initialize SDL
     const SDL_VideoInfo* info = nullptr;
     int width = 1920;
@@ -121,12 +131,13 @@ int Viz::init() {
         std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
         return 1;
     }
-
+#ifndef __EMSCRIPTEN__
     // Initialize glad
     if (!gladLoadGL()) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+#endif
 
     // Initialize OpenGL
     glViewport(0, 0, width, height);
@@ -137,9 +148,7 @@ int Viz::init() {
     // Initialize infotext
     font = new FtFont("res/RobotoMono-Regular.ttf", 16, width, height);
 
-    // Initialize VAOs and VBOs
-    glGenVertexArrays(1, &vaoId);
-    glBindVertexArray(vaoId);
+    // Initialize VBOs
     glGenBuffers(1, &dataBuffer);
     glGenBuffers(1, &indexBuffer);
     
@@ -239,37 +248,49 @@ void Viz::keyDown(SDL_keysym *keysym) {
 }
 #undef MODEQ
 
+void Viz::loopf() {
+    SDL_Event event;
+
+    while(SDL_PollEvent(&event)) {
+        switch(event.type) {
+        case SDL_KEYDOWN:
+            keyDown(&event.key.keysym);
+            break;
+        case SDL_QUIT:
+            running = false;
+            break;
+        case SDL_VIDEORESIZE:
+            width = event.resize.w;
+            height = event.resize.h;
+            
+            if(SDL_SetVideoMode(width, height, 0, SDL_OPENGL | SDL_NOFRAME) == 0) {
+                std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
+                exit(1);
+            }
+            glViewport(0, 0, width, height);
+            font->setWindow(width, height);
+            break;
+        }
+    }
+
+    update();
+    draw();
+}
+
+void _loopf(void *self) {
+    ((Viz*)self)->loopf();
+}
+
 void Viz::loop() {
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop_arg(_loopf, this, 100, 1);
+#else
     running = true;
     while (running) {
-        SDL_Event event;
-
-        while(SDL_PollEvent(&event)) {
-            switch(event.type) {
-            case SDL_KEYDOWN:
-                keyDown(&event.key.keysym);
-                break;
-            case SDL_QUIT:
-                running = false;
-                break;
-            case SDL_VIDEORESIZE:
-                width = event.resize.w;
-                height = event.resize.h;
-                
-                if(SDL_SetVideoMode(width, height, 0, SDL_OPENGL | SDL_NOFRAME) == 0) {
-                    std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
-                    exit(1);
-                }
-                glViewport(0, 0, width, height);
-                font->setWindow(width, height);
-                break;
-            }
-        }
-
-        update();
-        draw();
+        loopf();
+        SDL_Delay(10);
     }
-    
+#endif
     delete font;
     SDL_Quit();
 }

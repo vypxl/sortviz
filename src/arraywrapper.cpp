@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <ostream>
 #include <iomanip>
-#include <chrono>
 #include <thread>
 #include "arraywrapper.hpp"
 

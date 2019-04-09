@@ -42,7 +42,7 @@ int Shader::compileShader(GLuint id, const std::string &src) {
         std::cout << "shader compilation result: " << result << std::endl << " error log: " << &error[0] << std::endl;
     }
 
-    return result; // TODO add error detection
+    return result;
 }
 
 int Shader::loadFromFile(const std::string &vertexShaderFilename, const std::string &fragmenShaderFileName) {

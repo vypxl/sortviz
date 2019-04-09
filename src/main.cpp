@@ -16,3 +16,5 @@ int main() {
 
 // Next steps:
 // preload shaders
+// cmake
+// fix non virtual dtor warning

@@ -13,11 +13,20 @@
      - Variety Dots
 
 ## How to build (Linux)
-You will need `make`, `gcc/g++`, `sdl`, `freetype2` and `opengl` installed.
+You will need `make`, `gcc/g++`, `sdl`, `freetype2`, `glm` and `opengl` installed.
 
 Build: `make build` (you will find the executable in out/sortviz)
 Run: `make run`
 Delete build files: `make clean`
+
+Built executable can be found in `out/sortviz` or run directly via `make run`.
+
+## How to build (Web / Emscripten)
+You will need `make`, `emscripten/emcc` and `glm` installed.
+You may have to copy your system headers for `glm` into `<emscripten>/system/include`.
+
+`make embuild` will generate a html page with other files in `out/web/`.
+You have to start a web server like nodejs' `http-server` in that directory in order to run it.
 
 ## How to use
 The initial configuration is Selection Sort with Variety Loop and constant delay.

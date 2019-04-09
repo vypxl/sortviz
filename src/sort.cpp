@@ -1,5 +1,4 @@
 #include <thread>
-#include <chrono>
 #include <iomanip>
 
 #include "arraywrapper.hpp"
@@ -16,7 +15,7 @@ Sort::~Sort() {
 void Sort::loop() {
     while (true) {
         if (!finished && !paused) {
-            stats.elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - starttime).count();
+            stats.elapsed = SDL_GetTicks() - starttime;
         }
         if (terminate) return;
         if (paused) {
@@ -28,12 +27,12 @@ void Sort::loop() {
     }
 }
 
-void Sort::delay(int millis, bool track_in_stats) {
+void Sort::delay(unsigned int millis, bool track_in_stats) {
     if (millis <= 0) return;
-    auto now = std::chrono::high_resolution_clock::now();
-    std::this_thread::sleep_for(std::chrono::milliseconds(millis));
-    auto end = std::chrono::high_resolution_clock::now();
-    if(track_in_stats) stats.wait += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count();
+    unsigned int begin = SDL_GetTicks();
+    SDL_Delay(millis);
+    unsigned int end = SDL_GetTicks();
+    if(track_in_stats) stats.wait += end - begin;
 }
 
 void Sort::start() {
@@ -43,12 +42,12 @@ void Sort::start() {
 }
 
 void Sort::pause() {
-    pausetime = std::chrono::system_clock::now();
+    pausetime = SDL_GetTicks();
     paused = true;
 }
 
 void Sort::unpause() {
-    starttime += std::chrono::high_resolution_clock::now() - pausetime;
+    starttime += SDL_GetTicks() - pausetime;
     paused = false;
 }
 
@@ -65,7 +64,7 @@ void Sort::stop() {
 
 void Sort::reset() {
     finished = false;
-    starttime = std::chrono::system_clock::now();
+    starttime = SDL_GetTicks();
     stats.reset();
     _reset();
 }

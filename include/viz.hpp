@@ -1,7 +1,11 @@
 #ifndef __viz_hpp_
 #define __viz_hpp_
 
-#include <glad/glad.h>
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
+    #include <glad/glad.h>
+#endif
 #include <SDL/SDL.h>
 
 #include "shader.hpp"
@@ -62,7 +66,7 @@ private:
 
     Shader shader;
 
-    GLuint vaoId;
+    // GLuint vaoId;
     GLuint dataBuffer;
     GLuint indexBuffer;
 
@@ -86,6 +90,7 @@ public:
     /// change current sort
     void setSort(Sorts::Sorts which);
     void setDataSize(int newsize);
+    void loopf();
     void loop();
 };
 

@@ -2,7 +2,11 @@
 #define __shader_hpp_
 
 #include <string>
-#include <glad/glad.h>
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
+    #include <glad/glad.h>
+#endif
 #include <SDL/SDL.h>
 
 class Shader {
