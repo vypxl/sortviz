@@ -13,7 +13,7 @@
      - Variety Dots
 
 ## How to build (Linux)
-You will need `make`, `gcc/g++`, `sfml` and `opengl` installed.
+You will need `make`, `gcc/g++`, `sdl`, `freetype2` and `opengl` installed.
 
 Build: `make build` (you will find the executable in out/sortviz)
 Run: `make run`

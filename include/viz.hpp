@@ -1,10 +1,11 @@
 #ifndef __viz_hpp_
 #define __viz_hpp_
 
-#include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
 #include <glad/glad.h>
+#include <SDL/SDL.h>
 
+#include "shader.hpp"
+#include "ftfont.hpp"
 #include "sort.hpp"
 #include "sorts.hpp"
 #include "arraywrapper.hpp"
@@ -56,14 +57,14 @@ private:
     int current_sort = 0;
     int current_data_size = 2;
 
-    sf::RenderWindow window;
-    sf::Shader shader;
-    sf::Font font;
-    sf::Text infotext;
+    std::string infotext;
+    FtFont *font;
 
-    uint vaoId;
-    uint dataBuffer;
-    uint indexBuffer;
+    Shader shader;
+
+    GLuint vaoId;
+    GLuint dataBuffer;
+    GLuint indexBuffer;
 
     int attr_x;
     int attr_i;
@@ -71,9 +72,11 @@ private:
     Stats stats{0};
     Sort* sort = nullptr;
 
+    void keyDown(SDL_keysym *keysym);
     void update();
     void draw();
     void drawData();
+    void drawInfoText();
 
 public:
     /// initialize the display

@@ -14,23 +14,22 @@ void Viz::update() {
         << data->stats 
         << std::endl 
         << sort->stats;
-    std::string result = str.str();
-    infotext.setString(result);
+    
+    infotext = str.str();
 }
 
 void Viz::draw() {
-    sf::Shader::bind(&shader);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.1f, 0.1f, 0.1f, 0.f);
+
+    font->renderText(infotext, 10, height - 26, 1.f);
+    // font->renderText("aa\nbb", 10, height - 100, .2f);
     drawData();
-    window.pushGLStates();
-    window.resetGLStates();
-    window.draw(infotext);
-    window.popGLStates();
-    window.display();
+
+    SDL_GL_SwapBuffers();
 }
 
 void Viz::drawData() {
+    shader.bind();
     glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
     glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->data(), GL_STREAM_DRAW);
     glVertexAttribPointer(attr_x, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
@@ -45,82 +44,138 @@ void Viz::drawData() {
     glDisableVertexAttribArray(attr_x);
     glDisableVertexAttribArray(attr_i);
 
-    // fix stupid sfml
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
+void Viz::drawInfoText() {
+    // infotext_shader.bind();
+    
+    
+    /*
+    SDL_Color clrFg = {255,255,255,0};
+    SDL_Color clrBg = {0x1f,0x1f,0x1f,255};
+    SDL_Surface *sText = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended(font, infotext.c_str(), clrFg));
+    GLint nColors = sText->format->BytesPerPixel;
+
+    GLenum textureFormat;
+	if(nColors == 4) {
+		if(sText->format->Rmask == 0x000000ff)
+			textureFormat = GL_RGBA;
+		else textureFormat = GL_BGRA;
+	} else {
+		if(sText->format->Rmask == 0x000000ff)
+			textureFormat = GL_RGB;
+		else textureFormat = GL_BGR;
+	}
+
+    // glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+    // glTexImage2D(GL_TEXTURE_2D, 0, nColors, sText->w, sText->h, 0, textureFormat, GL_UNSIGNED_BYTE, sText->pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, nColors, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, nullptr);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, sText->w, sText->h, textureFormat, GL_UNSIGNED_BYTE, sText->pixels);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float bColor[] = { 0.f, 0.f, 0.f, 0.f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bColor);
+
+    glEnable(GL_TEXTURE_2D);
+
+    glBindBuffer(GL_ARRAY_BUFFER, infotext_vbo);
+    glVertexAttribPointer(infotext_shader_attr_pos, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(infotext_shader_attr_pos);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glDisableVertexAttribArray(infotext_shader_attr_pos);
+    
+    glDisable(GL_TEXTURE_2D);
+    SDL_FreeSurface(sText);
+    */
+}
+
 int Viz::init() {
-    // Initialize window
-    window.create(sf::VideoMode(width, height), "Sorting Vizualization", sf::Style::None);
-    window.setFramerateLimit(100);
-    window.setActive(true);
+    // Initialize SDL
+    const SDL_VideoInfo* info = nullptr;
+    int width = 1920;
+    int height = 1080;
 
-    auto desktop = sf::VideoMode::getDesktopMode();
-    window.setPosition(sf::Vector2i(
-        desktop.width/2 - window.getSize().x/2 + 1920 / 2, 
-        desktop.height/2 - window.getSize().y/2
-    ));
-
-    // Initialize infotext
-    if (!font.loadFromFile("res/RobotoMono-Regular.ttf")) {
-        std::cerr << "failed to load font" << std::endl;
+    if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << "Video initialization failed: " << SDL_GetError() << std::endl;
+        return 1;
     }
-    infotext.setFont(font);
-    infotext.setPosition(10, 10);
-    infotext.setFillColor(sf::Color::White);
-    infotext.setCharacterSize(15);
-    infotext.setString("test");
 
-    // window.draw(infotext);
+    info = SDL_GetVideoInfo( );
+    if(!info) {
+        std::cerr << "Video query failed: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
+
+    if(SDL_SetVideoMode(width, height, 0, SDL_OPENGL | SDL_NOFRAME) == 0) {
+        std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
+        return 1;
+    }
 
     // Initialize glad
     if (!gladLoadGL()) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    
-    // Initialize VAOs
+
+    // Initialize OpenGL
+    glViewport(0, 0, width, height);
+    glClearColor(0.1f, 0.1f, 0.1f, 0.f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Initialize infotext
+    font = new FtFont("res/RobotoMono-Regular.ttf", 16, width, height);
+
+    // Initialize VAOs and VBOs
     glGenVertexArrays(1, &vaoId);
     glBindVertexArray(vaoId);
+    glGenBuffers(1, &dataBuffer);
+    glGenBuffers(1, &indexBuffer);
     
-    
+    // Initialize data, sort and style
     setDataSize(dataSizes[current_data_size]);
-    setSort(Sorts::SelectionSort);
     changeStyle(Styles::Varietyloop);
     return 0;
 }
 
 void Viz::setDataSize(int data_size) {
     ArrayWrapper *old_data = data;
+
     // Initialize data and buffers
     data = new ArrayWrapper(data_size);
-    // data buffer
-    glGenBuffers(1, &dataBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
-    glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->data(), GL_STREAM_DRAW);
-
-    // index buffer
-    glGenBuffers(1, &indexBuffer);
+    
+    // refresh index buffer
     glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), data->indices(), GL_STATIC_DRAW);
 
     shader.setUniform("size", float(data->size()));
     setSort(static_cast<Sorts::Sorts>(current_sort));
+
     delete old_data;
 }
 
 void Viz::changeStyle(Viz::Styles which) {
     current_style = which;
-    if (!shader.loadFromFile(styles[current_style].vertexShader, styles[current_style].fragmentShader)) {
+    if (shader.loadFromFile(styles[current_style].vertexShader, styles[current_style].fragmentShader) == GL_FALSE) {
         std::cerr << "Failed to load shaders, style id: " << which << std::endl;
         return;
     }
+    shader.bind();
     attr_x = glGetAttribLocation(shader.getNativeHandle(), "x");
     attr_i = glGetAttribLocation(shader.getNativeHandle(), "i");
 
     shader.setUniform("size", float(data->size()));
-    sf::Shader::bind(&shader);
 }
 
 void Viz::setSort(Sorts::Sorts which) {
@@ -133,67 +188,89 @@ void Viz::setSort(Sorts::Sorts which) {
 
 #define MODEQ(var, val) var = var < 0 ? val - abs(var % val) : var % val
 
+void Viz::keyDown(SDL_keysym *keysym) {
+    switch (keysym->sym) {
+        case SDLK_SPACE:
+            sort->stop();
+            sort->data->shuffle();
+            sort->reset();
+            sort->data->stats.reset();
+            sort->start();
+            break;
+        case SDLK_p:
+            sort->toggle_pause();
+            break;
+        case SDLK_ESCAPE:
+            running = false;
+            break;
+        case SDLK_UP:
+            current_style++;
+            MODEQ(current_style, Styles::__count_);
+            changeStyle(static_cast<Styles>(current_style));
+            break;
+        case SDLK_DOWN:
+            current_style--;
+            MODEQ(current_style, Styles::__count_);
+            changeStyle(static_cast<Styles>(current_style));
+            break;
+        case SDLK_LEFT:
+            current_sort--;
+            MODEQ(current_sort, Sorts::__count_);
+            setSort(static_cast<Sorts::Sorts>(current_sort));
+            break;
+        case SDLK_RIGHT:
+            current_sort++;
+            MODEQ(current_sort, Sorts::__count_);
+            setSort(static_cast<Sorts::Sorts>(current_sort));
+            break;
+        case SDLK_q:
+            current_data_size--;
+            MODEQ(current_data_size, dataSizesCount);
+            setDataSize(dataSizes[current_data_size]);
+            break;
+        case SDLK_e:
+            current_data_size++;
+            MODEQ(current_data_size, dataSizesCount);
+            setDataSize(dataSizes[current_data_size]);
+            break;
+        default:
+            break;
+    } 
+}
+#undef MODEQ
+
 void Viz::loop() {
     running = true;
     while (running) {
-        sf::Event ev;
-        while (window.pollEvent(ev)) {
-            if (ev.type == sf::Event::Closed) running = false;
-            if (ev.type == sf::Event::KeyPressed) {
-                switch (ev.key.code) {
-                    case sf::Keyboard::Space:
-                        sort->stop();
-                        sort->data->shuffle();
-                        sort->reset();
-                        sort->data->stats.reset();
-                        sort->start();
-                        break;
-                    case sf::Keyboard::P:
-                        sort->toggle_pause();
-                        break;
-                    case sf::Keyboard::Escape:
-                        running = false;
-                        break;
-                    case sf::Keyboard::Up:
-                        current_style++;
-                        MODEQ(current_style, Styles::__count_);
-                        changeStyle(static_cast<Styles>(current_style));
-                        break;
-                    case sf::Keyboard::Down:
-                        current_style--;
-                        MODEQ(current_style, Styles::__count_);
-                        changeStyle(static_cast<Styles>(current_style));
-                        break;
-                    case sf::Keyboard::Left:
-                        current_sort--;
-                        MODEQ(current_sort, Sorts::__count_);
-                        setSort(static_cast<Sorts::Sorts>(current_sort));
-                        break;
-                    case sf::Keyboard::Right:
-                        current_sort++;
-                        MODEQ(current_sort, Sorts::__count_);
-                        setSort(static_cast<Sorts::Sorts>(current_sort));
-                        break;
-                    case sf::Keyboard::Q:
-                        current_data_size--;
-                        MODEQ(current_data_size, dataSizesCount);
-                        setDataSize(dataSizes[current_data_size]);
-                        break;
-                    case sf::Keyboard::E:
-                        current_data_size++;
-                        MODEQ(current_data_size, dataSizesCount);
-                        setDataSize(dataSizes[current_data_size]);
-                        break;
-                    default:
-                        break;
-                } 
+        SDL_Event event;
+
+        while(SDL_PollEvent(&event)) {
+            switch(event.type) {
+            case SDL_KEYDOWN:
+                keyDown(&event.key.keysym);
+                break;
+            case SDL_QUIT:
+                running = false;
+                break;
+            case SDL_VIDEORESIZE:
+                width = event.resize.w;
+                height = event.resize.h;
+                
+                if(SDL_SetVideoMode(width, height, 0, SDL_OPENGL | SDL_NOFRAME) == 0) {
+                    std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
+                    exit(1);
+                }
+                glViewport(0, 0, width, height);
+                font->setWindow(width, height);
+                break;
             }
         }
 
         update();
         draw();
     }
-
-    window.close();
+    
+    delete font;
+    SDL_Quit();
 }
 

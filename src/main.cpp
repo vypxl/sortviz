@@ -13,3 +13,6 @@ int main() {
     v.loop();
     return 0;
 }
+
+// Next steps:
+// preload shaders
