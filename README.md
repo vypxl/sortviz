@@ -2,6 +2,8 @@
 
 > An extendable sorting algorithm visualization
 
+[Live Browser Version](https://vypxl.github.io/sortviz/sortviz)
+
 ## Features
  * Sorting algorithms (so far):
      - Selectionsort
