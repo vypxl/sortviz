@@ -13,6 +13,7 @@ in float i;
 flat out float hue;
 
 void main() {
+    gl_PointSize = 2.0;
     hue = x / size;
     float ang = (i / size * TWO_PI);
     float d = abs(x - i);
