@@ -13,9 +13,3 @@ int main() {
     v.loop();
     return 0;
 }
-
-// Next steps:
-// preload shaders
-// cmake
-// fix non virtual dtor warning
-// make gh-pages

@@ -132,13 +132,12 @@ int Viz::init() {
         return 1;
     }
 #ifndef __EMSCRIPTEN__
-    // Initialize glad
-    if (!gladLoadGL()) {
-        std::cerr << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+        // Initialize glew
+        if (glewInit() != GLEW_OK) {
+            std::cerr << "Failed to initialize GLEW" << std::endl;
+            return -1;
+        }
 #endif
-
     // Initialize OpenGL
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.1f, 0.f);

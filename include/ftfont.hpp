@@ -4,12 +4,12 @@
 #include <string>
 #include <map>
 
-#include <ft2build.h>
+#include <freetype2/ft2build.h>
 #include FT_FREETYPE_H
 #ifdef __EMSCRIPTEN__
     #include <GLES3/gl3.h>
 #else
-    #include <glad/glad.h>
+    #include <GL/glew.h>
 #endif
 
 #include "shader.hpp"

@@ -5,9 +5,8 @@
 #ifdef __EMSCRIPTEN__
     #include <GLES3/gl3.h>
 #else
-    #include <glad/glad.h>
+    #include <GL/glew.h>
 #endif
-#include <SDL/SDL.h>
 
 class Shader {
 private:
