@@ -31,7 +31,9 @@ void Sort::loop() {
 
         if (paused) delay(50, false);
         else step();
+#ifndef __EMSCRIPTEN__
         std::this_thread::yield();
+#endif
     }
 }
 
