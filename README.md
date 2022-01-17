@@ -17,17 +17,19 @@
 ## How to build (Linux)
 You will need `cmake`, `make`, `gcc/g++`, `sdl`, `freetype2`, `glm`, `glew` and `opengl` installed.
 
-Build: `cmake . && make build` (you will find the executable in out/sortviz)
-Run: `out/sortviz`
+Build: `make build` (you will find the executable in out/sortviz)
+Run: `make run`
 
-Built executable can be found in `out/sortviz`.
+Yes, I am using makefiles to call cmake, which then generates makefiles.
+
+Built executable can be found in `build/native/out/sortviz`.
 
 ## How to build (Web / Emscripten)
 You will need `cmake`, `make`, `emscripten/emcc` and `glm` installed.
 You may have to copy your system headers for `glm` into `<emscripten>/system/include`.
 
-`emcmake cmake . && emmake make` will generate a html page with other files in `out/`.
-You have to start a web server like nodejs' `http-server` in that directory in order to run it.
+Build: `make embuild` will generate a html page with other files in `build/web/out`.
+Open in Browser: `make emrun`.
 
 ## How to use
 The initial configuration is Selection Sort with Variety Loop and constant delay.

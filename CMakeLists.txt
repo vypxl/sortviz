@@ -38,6 +38,11 @@ else()
   set(OPTS "-s FULL_ES3=1 -s USE_WEBGL2=1 -s WASM=1 -s ASYNCIFY -g")
   set(OUT_OPTS "-o out/web/sortviz.html --preload-file ./res@/res --preload-file ./shaders@/shaders")
 
+  if("${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+  else()
+    file(COPY res shaders DESTINATION ${PROJECT_BINARY_DIR})
+  endif()
+
   # Disabled until browsers get good multithreading support.
   # set(THREADS "-s USE_PTHREADS -s PTHREAD_POOL_SIZE=4")
   set(THREADS "")
