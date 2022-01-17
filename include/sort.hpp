@@ -1,7 +1,9 @@
 #ifndef __sort_hpp_
 #define __sort_hpp_
 
-#include <thread>
+#ifndef __EMSCRIPTEN__
+    #include <thread>
+#endif
 #include <SDL/SDL_timer.h>
 
 #include "arraywrapper.hpp"
@@ -22,7 +24,9 @@ public:
         }
     };
 private:
+#ifndef __EMSCRIPTEN__
     std::thread t;
+#endif
     unsigned int starttime;
     unsigned int pausetime;
     bool terminate = false;
@@ -37,11 +41,14 @@ protected:
 
 public:
     Sort(ArrayWrapper *ary);
-    ~Sort();
+    virtual ~Sort();
     Stats stats;
     ArrayWrapper *data;
 
     void start();
+#ifdef __EMSCRIPTEN__
+    void em_tick();
+#endif
     void pause();
     void unpause();
     void toggle_pause();

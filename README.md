@@ -15,19 +15,18 @@
      - Variety Dots
 
 ## How to build (Linux)
-You will need `make`, `gcc/g++`, `sdl`, `freetype2`, `glm` and `opengl` installed.
+You will need `cmake`, `make`, `gcc/g++`, `sdl`, `freetype2`, `glm`, `glew` and `opengl` installed.
 
-Build: `make build` (you will find the executable in out/sortviz)
-Run: `make run`
-Delete build files: `make clean`
+Build: `cmake . && make build` (you will find the executable in out/sortviz)
+Run: `out/sortviz`
 
-Built executable can be found in `out/sortviz` or run directly via `make run`.
+Built executable can be found in `out/sortviz`.
 
 ## How to build (Web / Emscripten)
-You will need `make`, `emscripten/emcc` and `glm` installed.
+You will need `cmake`, `make`, `emscripten/emcc` and `glm` installed.
 You may have to copy your system headers for `glm` into `<emscripten>/system/include`.
 
-`make embuild` will generate a html page with other files in `out/web/`.
+`emcmake cmake . && emmake make` will generate a html page with other files in `out/`.
 You have to start a web server like nodejs' `http-server` in that directory in order to run it.
 
 ## How to use

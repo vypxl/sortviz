@@ -52,7 +52,7 @@ public:
 /* Add new Sort definition here*/
 
 
-namespace Sorts{
+namespace Sorts {
     enum Sorts {
         SelectionSort,
         BubbleSort,
@@ -60,7 +60,8 @@ namespace Sorts{
 
         /* Register new sort here */
 
-        /* DO NOT TOUCH */ __count_
+        /* DO NOT TOUCH __count_, it must be the last element in this enum! */
+        __count_
     };
 
     const std::string names[3] {
@@ -70,7 +71,7 @@ namespace Sorts{
 
         /* Set new sort display name here */
     };
-    
+
     Sort* create(Sorts which, ArrayWrapper *data);
 }
 

@@ -4,13 +4,14 @@
 #include <string>
 #include <map>
 
-#include <freetype2/ft2build.h>
-#include FT_FREETYPE_H
 #ifdef __EMSCRIPTEN__
+    #include <ft2build.h>
     #include <GLES3/gl3.h>
 #else
+    #include <freetype2/ft2build.h>
     #include <GL/glew.h>
 #endif
+#include FT_FREETYPE_H
 
 #include "shader.hpp"
 

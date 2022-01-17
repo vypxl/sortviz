@@ -1,4 +1,8 @@
-#include <thread>
+#ifndef __EMSCRIPTEN__
+    #include <thread>
+#else
+    #include <emscripten.h>
+#endif
 #include <iomanip>
 
 #include "arraywrapper.hpp"
@@ -8,21 +12,25 @@ Sort::Sort(ArrayWrapper *ary) {
     this->data = ary;
 }
 
-Sort::~Sort() {
-    
+Sort::~Sort() { }
+
+#ifdef __EMSCRIPTEN__
+void Sort::em_tick() {
+    if (!finished && !paused)
+        stats.elapsed = SDL_GetTicks() - starttime;
+
+    if (!paused) step();
 }
+#endif
 
 void Sort::loop() {
     while (true) {
-        if (!finished && !paused) {
+        if (terminate) break;
+        if (!finished && !paused)
             stats.elapsed = SDL_GetTicks() - starttime;
-        }
-        if (terminate) return;
-        if (paused) {
-            delay(50, false);
-            continue;
-        }
-        step();
+
+        if (paused) delay(50, false);
+        else step();
         std::this_thread::yield();
     }
 }
@@ -30,7 +38,11 @@ void Sort::loop() {
 void Sort::delay(unsigned int millis, bool track_in_stats) {
     if (millis <= 0) return;
     unsigned int begin = SDL_GetTicks();
+#ifndef __EMSCRIPTEN__
     SDL_Delay(millis);
+#else
+    emscripten_sleep(millis);
+#endif
     unsigned int end = SDL_GetTicks();
     if(track_in_stats) stats.wait += end - begin;
 }
@@ -38,7 +50,9 @@ void Sort::delay(unsigned int millis, bool track_in_stats) {
 void Sort::start() {
     terminate = false;
     paused = false;
+#ifndef __EMSCRIPTEN__
     t = std::thread(&Sort::loop, this);
+#endif
 }
 
 void Sort::pause() {
@@ -57,9 +71,13 @@ void Sort::toggle_pause() {
 }
 
 void Sort::stop() {
+#ifndef __EMSCRIPTEN__
     if (!t.joinable()) return;
     terminate = true;
     t.join();
+#else
+    terminate = true;
+#endif
 }
 
 void Sort::reset() {

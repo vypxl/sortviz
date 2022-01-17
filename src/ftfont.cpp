@@ -1,6 +1,12 @@
 #include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+
+#ifdef __EMSCRIPTEN__
+  #include <glm.hpp>
+  #include <gtc/type_ptr.hpp>
+#else
+  #include <glm/glm.hpp>
+  #include <glm/gtc/type_ptr.hpp>
+#endif
 
 #include "ftfont.hpp"
 

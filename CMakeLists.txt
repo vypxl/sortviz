@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(glapp VERSION 0.1.0)
+project(sortviz)
 
 set (CMAKE_CXX_STANDARD 11)
 
@@ -8,29 +8,44 @@ file(GLOB_RECURSE SOURCE_FILES
   ${PROJECT_SOURCE_DIR}/src/*.cpp
 )
 
-add_executable(glapp ${SOURCE_FILES})
-
-set(SDL_BUILDING_LIBRARY True)
-find_package(GLEW REQUIRED)
-find_package(glm REQUIRED)
-find_package(SDL REQUIRED)
-find_package(Freetype REQUIRED)
-find_package(OpenGL REQUIRED)
-
+add_executable(sortviz ${SOURCE_FILES})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/out)
 
-include_directories(
-  "./include/"
-  ${GLEW_INCLUDE_DIR}
-  ${GLM_INCLUDE_DIRS}
-  ${SDL_INCLUDE_DIR}
-  ${FREETYPE_INCLUDE_DIRS}
-  ${OPENGL_INCLUDE_DIR}
-)
+if(NOT EMSCRIPTEN)
+  find_package(GLEW REQUIRED)
+  find_package(SDL REQUIRED)
+  find_package(Freetype REQUIRED)
+  find_package(OpenGL REQUIRED)
 
-target_link_libraries(glapp
-  ${GLEW_LIBRARIES}
-  ${SDL_LIBRARY}
-  ${FREETYPE_LIBRARY}
-  ${OPENGL_LIBRARIES}
-)
+
+  include_directories(
+    "./include/"
+    ${GLEW_INCLUDE_DIR}
+    ${SDL_INCLUDE_DIR}
+    ${FREETYPE_INCLUDE_DIRS}
+    ${OPENGL_INCLUDE_DIR}
+  )
+
+  target_link_libraries(sortviz
+    ${GLEW_LIBRARIES}
+    ${SDL_LIBRARY}
+    ${FREETYPE_LIBRARY}
+    ${OPENGL_LIBRARIES}
+  )
+else()
+  set(CMAKE_EXECUTABLE_SUFFIX .html)
+  set(LIBS "-s USE_SDL=1 -s USE_FREETYPE=1")
+  set(OPTS "-s FULL_ES3=1 -s USE_WEBGL2=1 -s WASM=1 -s ASYNCIFY -g")
+  set(OUT_OPTS "-o out/web/sortviz.html --preload-file ./res@/res --preload-file ./shaders@/shaders")
+
+  # Disabled until browsers get good multithreading support.
+  # set(THREADS "-s USE_PTHREADS -s PTHREAD_POOL_SIZE=4")
+  set(THREADS "")
+
+  include_directories(
+    "./include/"
+    "/usr/include/glm"
+  )
+  add_definitions(${LIBS})
+  set_target_properties(sortviz PROPERTIES LINK_FLAGS "${LIBS} ${OPTS} ${THREADS} ${OUT_OPTS}")
+endif()

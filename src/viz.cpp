@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <thread>
 
 #ifdef __EMSCRIPTEN__
     #include <emscripten.h>
@@ -19,8 +18,11 @@ void Viz::update() {
         << data->stats 
         << std::endl 
         << sort->stats;
-    
+
     infotext = str.str();
+#ifdef __EMSCRIPTEN__
+    sort->em_tick();
+#endif
 }
 
 void Viz::draw() {
@@ -105,7 +107,7 @@ int Viz::init() {
     EmscriptenWebGLContextAttributes __attrs;
     emscripten_webgl_init_context_attributes(&__attrs);
     __attrs.majorVersion = 2; __attrs.minorVersion = 0;
-    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE __ctx = emscripten_webgl_create_context(0, &__attrs);
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE __ctx = emscripten_webgl_create_context("#canvas", &__attrs);
     emscripten_webgl_make_context_current(__ctx);
 #endif
     // Initialize SDL
@@ -282,7 +284,7 @@ void _loopf(void *self) {
 
 void Viz::loop() {
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop_arg(_loopf, this, 100, 1);
+    emscripten_set_main_loop_arg(_loopf, this, 0, 1);
 #else
     running = true;
     while (running) {
