@@ -92,8 +92,9 @@ void Sort::reset() {
 std::ostream& operator<<(std::ostream& o, const Sort::Stats& stats) {
     return o << std::left
         << "steps: " << std::setw(8) << stats.steps
-        << " | elapsed: " << std::setw(8) << stats.elapsed
-        << " seconds | time waited: " << std::setw(8) << stats.wait
+        << " | elapsed: " << std::setw(8) << (stats.elapsed / 1000.0)
+        << std::setw(19) << "seconds"
+        << "| time waited: " << std::setw(8) << (stats.wait / 1000.0)
         << " seconds | waited for " << std::setw(8) << (stats.wait / stats.elapsed * 100) 
         << "% of the time"
         ;

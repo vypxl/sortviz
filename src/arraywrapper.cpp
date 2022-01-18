@@ -52,7 +52,7 @@ std::ostream& operator<<(std::ostream& o, const ArrayWrapper::Stats& stats) {
     return o << std::left
         << "size:  " << std::setw(8) << stats.size
         << " | reads / writes: " << std::setw(8) << stats.reads << " / " << std::setw(8) << stats.writes
-        << " | compares: " << std::setw(8) << stats.compares
+        << " | compares: " << std::setw(19) << stats.compares
         << " | swaps: " << std::setw(8) << stats.swaps
         ;
 }
