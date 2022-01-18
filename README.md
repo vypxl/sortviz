@@ -26,7 +26,8 @@ Built executable can be found in `build/native/out/sortviz`.
 
 ## How to build (Web / Emscripten)
 You will need `cmake`, `make`, `emscripten/emcc` and `glm` installed.
-You may have to copy your system headers for `glm` into `<emscripten>/system/include`.
+
+You might have to copy your headers for `glm` into `./include`. To find the system-wide `glm` headers, you can use `$ find / -type f -name glm.hpp 2> /dev/null`. Then do `$ cp -r <dir>/glm ./include/`
 
 Build: `make embuild` will generate a html page with other files in `build/web/out`.
 Open in Browser: `make emrun`.

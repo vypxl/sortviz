@@ -12,7 +12,7 @@ run: build
 	@build/native/out/sortviz
 
 emrun: embuild
-	@emrun build/native/out/sortviz.html
+	@emrun build/web/out/sortviz.html
 
 clean:
 	@rm -rf build/
