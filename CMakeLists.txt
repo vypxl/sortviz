@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.18)
 
 project(sortviz)
 
@@ -21,13 +21,14 @@ if(NOT EMSCRIPTEN)
   include_directories(
     "${CMAKE_SOURCE_DIR}/include/"
     ${FREETYPE_INCLUDE_DIRS}
-    ${GLM_INCLUDE_DIRS}
+    ${glm_INCLUDE_DIRS}
+    ${GLEW_INCLUDE_DIRS}
   )
 
   target_link_libraries(sortviz
     ${GLEW_LIBRARIES}
     ${SDL_LIBRARY}
-    ${FREETYPE_LIBRARY}
+    ${FREETYPE_LIBRARIES}
     ${OPENGL_LIBRARIES}
   )
 else()

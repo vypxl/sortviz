@@ -1,0 +1,7 @@
+out/
+.vscode/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+build
+include/glm
