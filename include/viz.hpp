@@ -6,7 +6,7 @@
 #else
     #include <GL/glew.h>
 #endif
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #include "shader.hpp"
 #include "ftfont.hpp"
@@ -56,6 +56,9 @@ private:
     bool running = false;
     int width = 1920;
     int height = 1080;
+
+    SDL_Window* window;
+    SDL_GLContext context;
     
     int current_style = 0;
     int current_sort = 0;
@@ -66,7 +69,6 @@ private:
 
     Shader shader;
 
-    // GLuint vaoId;
     GLuint dataBuffer;
     GLuint indexBuffer;
 
@@ -76,11 +78,10 @@ private:
     Stats stats{0};
     Sort* sort = nullptr;
 
-    void keyDown(SDL_keysym *keysym);
+    void keyDown(SDL_Keysym *keysym);
     void update();
     void draw();
     void drawData();
-    void drawInfoText();
 
 public:
     /// initialize the display

@@ -31,7 +31,7 @@ void Viz::draw() {
     font->renderText(infotext, 10, height - 26, 1.f);
     drawData();
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(window);
 }
 
 void Viz::drawData() {
@@ -53,55 +53,6 @@ void Viz::drawData() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Viz::drawInfoText() {
-    // infotext_shader.bind();
-    
-    
-    /*
-    SDL_Color clrFg = {255,255,255,0};
-    SDL_Color clrBg = {0x1f,0x1f,0x1f,255};
-    SDL_Surface *sText = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended(font, infotext.c_str(), clrFg));
-    GLint nColors = sText->format->BytesPerPixel;
-
-    GLenum textureFormat;
-	if(nColors == 4) {
-		if(sText->format->Rmask == 0x000000ff)
-			textureFormat = GL_RGBA;
-		else textureFormat = GL_BGRA;
-	} else {
-		if(sText->format->Rmask == 0x000000ff)
-			textureFormat = GL_RGB;
-		else textureFormat = GL_BGR;
-	}
-
-    // glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-    // glTexImage2D(GL_TEXTURE_2D, 0, nColors, sText->w, sText->h, 0, textureFormat, GL_UNSIGNED_BYTE, sText->pixels);
-    glTexImage2D(GL_TEXTURE_2D, 0, nColors, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, nullptr);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, sText->w, sText->h, textureFormat, GL_UNSIGNED_BYTE, sText->pixels);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float bColor[] = { 0.f, 0.f, 0.f, 0.f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bColor);
-
-    glEnable(GL_TEXTURE_2D);
-
-    glBindBuffer(GL_ARRAY_BUFFER, infotext_vbo);
-    glVertexAttribPointer(infotext_shader_attr_pos, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
-    glEnableVertexAttribArray(infotext_shader_attr_pos);
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glDisableVertexAttribArray(infotext_shader_attr_pos);
-    
-    glDisable(GL_TEXTURE_2D);
-    SDL_FreeSurface(sText);
-    */
-}
-
 int Viz::init() {
 #ifdef __EMSCRIPTEN__
     EmscriptenWebGLContextAttributes __attrs;
@@ -111,7 +62,6 @@ int Viz::init() {
     emscripten_webgl_make_context_current(__ctx);
 #endif
     // Initialize SDL
-    const SDL_VideoInfo* info = nullptr;
     int width = 1920;
     int height = 1080;
 
@@ -120,19 +70,20 @@ int Viz::init() {
         return 1;
     }
 
-    info = SDL_GetVideoInfo( );
-    if(!info) {
-        std::cerr << "Video query failed: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 
-    if(SDL_SetVideoMode(width, height, 0, SDL_OPENGL | SDL_NOFRAME) == 0) {
+    window = SDL_CreateWindow("Sortviz",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        width, height,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+    );
+    if (window == 0) {
         std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
         return 1;
     }
+    context = SDL_GL_CreateContext(window);
 #ifndef __EMSCRIPTEN__
         // Initialize glew
         if (glewInit() != GLEW_OK) {
@@ -198,7 +149,7 @@ void Viz::setSort(Sorts::Sorts which) {
 
 #define MODEQ(var, val) var = var < 0 ? val - abs(var % val) : var % val
 
-void Viz::keyDown(SDL_keysym *keysym) {
+void Viz::keyDown(SDL_Keysym *keysym) {
     switch (keysym->sym) {
         case SDLK_SPACE:
             sort->stop();
@@ -260,16 +211,16 @@ void Viz::loopf() {
         case SDL_QUIT:
             running = false;
             break;
-        case SDL_VIDEORESIZE:
-            width = event.resize.w;
-            height = event.resize.h;
-            
-            if(SDL_SetVideoMode(width, height, 0, SDL_OPENGL | SDL_NOFRAME) == 0) {
-                std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
-                exit(1);
+        case SDL_WINDOWEVENT:
+            switch (event.window.event) {
+              case SDL_WINDOWEVENT_RESIZED:
+                width = event.window.data1;
+                height = event.window.data2;
+
+                glViewport(0, 0, width, height);
+                font->setWindow(width, height);
+                break;
             }
-            glViewport(0, 0, width, height);
-            font->setWindow(width, height);
             break;
         }
     }
