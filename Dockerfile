@@ -1,16 +1,13 @@
 # syntax=docker/dockerfile:1
-FROM conanio/gcc10 AS sys
+FROM conanio/gcc10 AS deps
 RUN sudo -A apt-get update > /dev/null # && sudo -A apt-get install -y --no-install-recommends libegl-dev libsdl-dev libx11-dev > /dev/null
-
-FROM sys AS deps
 
 WORKDIR /app
 COPY ./conanfile.txt ./
-RUN sudo chown -R conan /app && mkdir -p /app/build
-WORKDIR /app/build
-
+COPY ./Makefile ./
+RUN sudo chown -R conan /app
 ENV CONAN_SYSREQUIRES_MODE=enabled
-RUN conan install ..
+RUN make deps
 
 FROM deps AS builder
 
@@ -18,10 +15,5 @@ WORKDIR /app
 COPY . .
 RUN sudo chown -R conan /app
 
-WORKDIR /app/build
-# RUN conan build .
-RUN cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_MODULE_PATH=$PWD
-RUN cmake --build .
-
-CMD [ "/app/build/out/sortviz" ]
+RUN make build
 

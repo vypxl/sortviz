@@ -1,22 +1,27 @@
-.PHONY: deps build embuild run emrun clean
+.PHONY: deps build embuild run emrun dockerbuild clean
 
 deps:
-	@mkdir -p build
-	@cd build && conan install .. -s compiler.version=10
+	@mkdir -p build/native
+	@cd build/native && conan install ../.. -s compiler.version=10
 
-build: deps
-	@cmake -B build -DCMAKE_MODULE_PATH=./build
-	@cmake --build ./build
+DEPSFAIL={ echo '\#\#\#\#\# Build failed, did you run `make deps`? \#\#\#\#\#'; false; }
+
+build:
+	@cmake -B build/native -DCMAKE_MODULE_PATH=./build/native || $(DEPSFAIL)
+	@cmake --build ./build/native || $(DEPSFAIL)
 
 embuild:
 	@emcmake cmake -B build/web .
 	@emmake make -C build/web
 
 run: build
-	@build/out/sortviz
+	@build/native/out/sortviz
 
 emrun: embuild
 	@emrun build/web/out/sortviz.html
+
+dockerbuild:
+	docker build -t sortviz .
 
 clean:
 	@rm -rf build/

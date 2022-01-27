@@ -33,7 +33,7 @@ if(NOT EMSCRIPTEN)
   target_link_libraries(sortviz
     ${GLEW_LIBRARIES}
     ${SDL2_LIBRARIES}
-    ${FREETYPE_LIBRARY}
+    ${FREETYPE_LIBRARIES}
     Threads::Threads
     ${OPENGL_LIBRARIES}
   )
