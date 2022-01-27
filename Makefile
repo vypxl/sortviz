@@ -2,6 +2,7 @@
 
 deps:
 	@mkdir -p build/native
+	@mkdir -p build/web
 	@cd build/native && conan install ../.. -s compiler.version=10
 
 DEPSFAIL={ echo '\#\#\#\#\# Build failed, did you run `make deps`? \#\#\#\#\#'; false; }
@@ -9,21 +10,26 @@ DEPSFAIL={ echo '\#\#\#\#\# Build failed, did you run `make deps`? \#\#\#\#\#'; 
 build:
 	@cmake -B build/native -DCMAKE_MODULE_PATH=./build/native || $(DEPSFAIL)
 	@cmake --build ./build/native || $(DEPSFAIL)
+	@mkdir -p out
+	@cp build/native/out/sortviz out/sortviz
 
 embuild:
-	@emcmake cmake -B build/web .
-	@emmake make -C build/web
+	@emcmake cmake -B build/web
+	@cmake --build ./build/web
+	@mkdir -p out/web
+	@cp -Tr build/web/out out/web
 
 run: build
-	@build/native/out/sortviz
+	@out/sortviz
 
 emrun: embuild
-	@emrun build/web/out/sortviz.html
+	@emrun out/web/sortviz.html
 
 dockerbuild:
-	docker build -t sortviz .
+	@DOCKER_BUILDKIT=1 docker build -o out .
 
 clean:
 	@rm -rf build/
+	@rm -rf out/
 
 .DEFAULT_GOAL := build

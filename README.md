@@ -15,22 +15,28 @@
      - Variety Dots
 
 ## How to build (Linux)
-You will need `cmake`, `make`, `gcc/g++`, `sdl`, `freetype2`, `glm`, `glew` and `opengl` installed.
+You will need `cmake`, `make`, `conan`, and `gcc/g++` installed.
 
-Build: `make build` (you will find the executable in out/sortviz)
+To manage dependencies, this project uses [Conan](https://conan.io).
+Before building, you may want to run `make deps` to pull the dependencies via conan.
+
+It is also possible to build this project without conan, if you install all dependencies system-wide.
+
+Build: `make build` (you will find the executable in `out/sortviz`)
 Run: `make run`
 
 Yes, I am using makefiles to call cmake, which then generates makefiles.
-
-Built executable can be found in `build/native/out/sortviz`.
 
 ## How to build (Web / Emscripten)
 You will need `cmake`, `make`, `emscripten/emcc` and `glm` installed.
 
 You might have to copy your headers for `glm` into `./include`. To find the system-wide `glm` headers, you can use `$ find / -type f -name glm.hpp 2> /dev/null`. Then do `$ cp -r <dir>/glm ./include/`
 
-Build: `make embuild` will generate a html page with other files in `build/web/out`.
+Build: `make embuild` will generate a html page with other files in `out/web/`.
 Open in Browser: `make emrun`.
+
+## How to build (Docker)
+If you happen to have docker (and make) installed, you can build both the native and web version via `make dockerbuild`. This builds both versions and puts them into `out/`, without the need to install any libraries!
 
 ## How to use
 The initial configuration is Selection Sort with Variety Loop and constant delay.

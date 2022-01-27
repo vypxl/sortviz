@@ -1,19 +1,45 @@
 # syntax=docker/dockerfile:1
-FROM conanio/gcc10 AS deps
-RUN sudo -A apt-get update > /dev/null # && sudo -A apt-get install -y --no-install-recommends libegl-dev libsdl-dev libx11-dev > /dev/null
 
+# Native system dependencies
+FROM conanio/gcc10 AS sys_deps
+RUN sudo apt-get update && sudo apt-get install -y libsdl2-dev libegl-dev
+
+FROM sys_deps AS DEPS
 WORKDIR /app
 COPY ./conanfile.txt ./
-COPY ./Makefile ./
 RUN sudo chown -R conan /app
 ENV CONAN_SYSREQUIRES_MODE=enabled
-RUN make deps
+RUN mkdir -p build/native \
+    && cd build/native \
+    && conan install ../.. -s compiler.version=10
 
-FROM deps AS builder
-
+# Building native target
+FROM deps AS native
 WORKDIR /app
 COPY . .
-RUN sudo chown -R conan /app
+RUN sudo chown -R conan /app && make build
 
-RUN make build
+#####
 
+# Web dependencies
+FROM emscripten/emsdk:3.1.2 AS web_deps
+WORKDIR /app
+# Caching used ports
+RUN echo "" | emcc -s USE_SDL=2 -s USE_FREETYPE -o /dev/null -x c++ -
+# Predownloading glm
+RUN git clone https://github.com/g-truc/glm.git /tmp/glm \
+    && mkdir -p include \
+    && cp -TR /tmp/glm/glm include/glm \
+    && rm -rf /tmp/glm
+
+# Building web target
+FROM web_deps AS web
+COPY . .
+RUN make embuild
+
+#####
+
+# Copying compilation results
+FROM scratch AS export
+COPY --from=web /app/out /
+COPY --from=native /app/out /
