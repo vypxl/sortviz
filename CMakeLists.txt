@@ -13,26 +13,35 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/out)
 
 if(NOT EMSCRIPTEN)
   find_package(GLEW REQUIRED)
-  find_package(SDL REQUIRED)
+  find_package(SDL2 REQUIRED)
   find_package(Freetype REQUIRED)
-  find_package(OpenGL REQUIRED)
   find_package(glm REQUIRED)
+
+  find_package(Threads REQUIRED)
+
+  find_package(OpenGL REQUIRED)
 
   include_directories(
     "${CMAKE_SOURCE_DIR}/include/"
+    ${GLEW_INCLUDE_DIRS}
+    ${SDL2_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
   )
 
   target_link_libraries(sortviz
     ${GLEW_LIBRARIES}
-    ${SDL_LIBRARY}
+    ${SDL2_LIBRARIES}
     ${FREETYPE_LIBRARY}
+    Threads::Threads
     ${OPENGL_LIBRARIES}
   )
+
+  add_compile_options(-pthread)
+
 else()
   set(CMAKE_EXECUTABLE_SUFFIX .html)
-  set(LIBS "-s USE_SDL=1 -s USE_FREETYPE=1")
+  set(LIBS "-s USE_SDL=2 -s USE_FREETYPE=1")
   set(OPTS "-s FULL_ES3=1 -s USE_WEBGL2=1 -s WASM=1 -s ASYNCIFY -g")
   set(OUT_OPTS "-o out/web/sortviz.html --preload-file ./res@/res --preload-file ./shaders@/shaders")
 

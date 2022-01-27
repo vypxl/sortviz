@@ -4,7 +4,7 @@
 #ifndef __EMSCRIPTEN__
     #include <thread>
 #endif
-#include <SDL/SDL_timer.h>
+#include <SDL.h>
 
 #include "arraywrapper.hpp"
 
