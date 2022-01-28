@@ -3,18 +3,18 @@
 deps:
 	@mkdir -p build/native
 	@mkdir -p build/web
-	@cd build/native && conan install ../.. -s compiler.version=10
+	@cd build/native && conan install ../.. -s compiler=gcc -s compiler.version=10
 
 DEPSFAIL={ echo '\#\#\#\#\# Build failed, did you run `make deps`? \#\#\#\#\#'; false; }
 
 build:
-	@cmake -B build/native -DCMAKE_MODULE_PATH=./build/native || $(DEPSFAIL)
+	@cmake -B build/native -DCMAKE_MODULE_PATH=./build/native -GNinja || $(DEPSFAIL)
 	@cmake --build ./build/native || $(DEPSFAIL)
 	@mkdir -p out
 	@cp build/native/out/sortviz out/sortviz
 
 embuild:
-	@emcmake cmake -B build/web
+	@emcmake cmake -B build/web -GNinja
 	@cmake --build ./build/web
 	@mkdir -p out/web
 	@cp -Tr build/web/out out/web

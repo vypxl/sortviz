@@ -2,7 +2,7 @@
 
 # Native system dependencies
 FROM conanio/gcc10 AS sys_deps
-RUN sudo apt-get update && sudo apt-get install -y libsdl2-dev libegl-dev
+RUN sudo apt-get update && sudo apt-get install -y libsdl2-dev libegl-dev ninja-build
 
 FROM sys_deps AS DEPS
 WORKDIR /app
@@ -24,6 +24,7 @@ RUN sudo chown -R conan /app && make build
 # Web dependencies
 FROM emscripten/emsdk:3.1.2 AS web_deps
 WORKDIR /app
+RUN sudo apt-get update && sudo apt-get install ninja-build
 # Caching used ports
 RUN echo "" | emcc -s USE_SDL=2 -s USE_FREETYPE -o /dev/null -x c++ -
 # Predownloading glm
