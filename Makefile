@@ -7,14 +7,18 @@ deps:
 
 DEPSFAIL={ echo '\#\#\#\#\# Build failed, did you run `make deps`? \#\#\#\#\#'; false; }
 
+CMAKE_OPTS=-DCMAKE_EXPORT_COMPILE_COMMANDS=1 -GNinja
+
 build:
-	@cmake -B build/native -DCMAKE_MODULE_PATH=./build/native -GNinja || $(DEPSFAIL)
+	@cmake -B build/native -DCMAKE_MODULE_PATH=./build/native $(CMAKE_OPTS) || $(DEPSFAIL)
+	@ln -fs native/compile_commands.json build/compile_commands.json
 	@cmake --build ./build/native || $(DEPSFAIL)
 	@mkdir -p out
 	@cp build/native/out/sortviz out/sortviz
 
 embuild:
-	@emcmake cmake -B build/web -GNinja
+	@emcmake cmake -B build/web $(CMAKE_OPTS)
+	@ln -fs web/compile_commands.json build/compile_commands.json
 	@cmake --build ./build/web
 	@mkdir -p out/web
 	@cp -Tr build/web/out out/web
