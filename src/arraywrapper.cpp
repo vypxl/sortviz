@@ -22,30 +22,51 @@ ArrayWrapper::~ArrayWrapper() {
 }
 
 float ArrayWrapper::get(int idx) {
+    delay();
     stats.reads++;
+
     return _data[idx];
 }
 
 void ArrayWrapper::set(int idx, float val) {
+    delay();
     stats.writes++;
     _data[idx] = val;
 }
 
 void ArrayWrapper::swap(int i, int j) {
+    delay();
     stats.swaps++;
-    stats.reads += 2;
-    stats.writes += 2;
-    std::swap(_data[i], _data[j]);
+
+    float tmp = get(i);
+    set(i, get(j));
+    set(j, tmp);
 }
 
 int ArrayWrapper::compare(int idx1, int idx2) {
+    delay();
     stats.compares++;
-    stats.reads += 2;
-    return _data[idx1] - _data[idx2];
+
+    return get(idx1) - get(idx2);
 }
 
 void ArrayWrapper::shuffle() {
     std::random_shuffle(_data, _data + _size - 1);
+}
+
+void ArrayWrapper::delay() {
+    if (_size >= 65536) return;
+    waitQueue += get_delay(_size);
+    if (waitQueue <= 60) return;
+
+    int waitTime = static_cast<int>(waitQueue);
+    auto begin = std::chrono::system_clock::now();
+
+    std::this_thread::sleep_for(std::chrono::microseconds(waitTime));
+
+    auto end = std::chrono::system_clock::now();
+    stats.waited += end - begin;
+    waitQueue = 0;
 }
 
 std::ostream& operator<<(std::ostream& o, const ArrayWrapper::Stats& stats) {

@@ -1,7 +1,6 @@
 #ifndef __sorts_hpp_
 #define __sorts_hpp_
 
-#include <iostream>
 #include <stack>
 
 #include "sort.hpp"
@@ -18,8 +17,7 @@ protected:
     void step();
     void _reset();
 public:
-    SelectionSort(ArrayWrapper *ary) : Sort(ary) {};
-    void dispose();
+    SelectionSort(ArrayWrapper *ary);
 };
 
 class BubbleSort : public Sort {
@@ -30,8 +28,7 @@ protected:
     void step();
     void _reset();
 public:
-    BubbleSort(ArrayWrapper *ary) : Sort(ary) {};
-    void dispose();
+    BubbleSort(ArrayWrapper *ary);
 };
 
 class QuickSort : public Sort {
@@ -44,8 +41,7 @@ protected:
     void step();
     void _reset();
 public:
-    QuickSort(ArrayWrapper *ary) : Sort(ary) {};
-    void dispose();
+    QuickSort(ArrayWrapper *ary);
 };
 
 

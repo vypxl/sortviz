@@ -1,5 +1,9 @@
 #include "sorts.hpp"
 
+BubbleSort::BubbleSort(ArrayWrapper *ary) : Sort(ary) {
+    ary->get_delay = [](int data_size) { return 5000000.0 / (data_size * data_size); };
+}
+
 void BubbleSort::step() {
     if (!swapped) {
         finished = true;
@@ -16,7 +20,6 @@ void BubbleSort::step() {
 
     n--;
     stats.steps++;
-    delay(10000 / data->size());
 }
 
 void BubbleSort::_reset() {

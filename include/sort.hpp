@@ -5,41 +5,40 @@
     #include <thread>
 #endif
 #include <SDL.h>
+#include <chrono>
 
 #include "arraywrapper.hpp"
 
 class Sort {
-public:
-    struct Stats{
-        unsigned int steps;
-        double elapsed;
-        double wait;
-
-        Stats() {
-            reset();
-        }
-
-        void reset() {
-            steps = 0; elapsed = 0; wait = 0;
-        }
-    };
 private:
 #ifndef __EMSCRIPTEN__
     std::thread t;
 #endif
-    unsigned int starttime;
-    unsigned int pausetime;
+    std::chrono::system_clock::time_point starttime;
+    std::chrono::system_clock::time_point pausetime;
     bool terminate = false;
     bool paused = false;
     void loop();
 
 protected:
     bool finished = false;
-    void delay(unsigned int millis, bool track_in_stats = true);
     virtual void step() = 0;
     virtual void _reset() = 0;
 
 public:
+    struct Stats{
+        unsigned int steps;
+        std::chrono::duration<double> elapsed;
+
+        Stats() {
+            reset();
+        }
+
+        void reset() {
+            steps = 0; elapsed = std::chrono::seconds(0);
+        }
+    };
+
     Sort(ArrayWrapper *ary);
     virtual ~Sort();
     Stats stats;

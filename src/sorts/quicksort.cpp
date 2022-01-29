@@ -1,6 +1,10 @@
 #include "sorts.hpp"
 #include <stack>
 
+QuickSort::QuickSort(ArrayWrapper *ary) : Sort(ary) {
+    ary->get_delay = [](int data_size) { return 5e5 / (data_size * log(data_size)); };
+}
+
 int QuickSort::partition(int lo, int hi) {
     int i = lo - 1;
 
@@ -31,7 +35,6 @@ void QuickSort::step() {
     stk.push(std::pair<int, int>(p + 1, cur.second));
 
     stats.steps++;
-    delay(10000 / data->size());
 }
 
 void QuickSort::_reset() {

@@ -1,9 +1,10 @@
-#ifndef __EMSCRIPTEN__
-    #include <thread>
-#else
+#ifdef __EMSCRIPTEN__
     #include <emscripten.h>
 #endif
+
+#include <chrono>
 #include <iomanip>
+#include <thread>
 
 #include "arraywrapper.hpp"
 #include "sort.hpp"
@@ -17,7 +18,7 @@ Sort::~Sort() { }
 #ifdef __EMSCRIPTEN__
 void Sort::em_tick() {
     if (!finished && !paused)
-        stats.elapsed = SDL_GetTicks() - starttime;
+        stats.elapsed = std::chrono::system_clock::now() - starttime;
 
     if (!paused) step();
 }
@@ -27,26 +28,14 @@ void Sort::loop() {
     while (true) {
         if (terminate) break;
         if (!finished && !paused)
-            stats.elapsed = SDL_GetTicks() - starttime;
+            stats.elapsed = std::chrono::system_clock::now() - starttime;
 
-        if (paused) delay(50, false);
+        if (paused) std::this_thread::sleep_for(std::chrono::milliseconds(50));
         else step();
 #ifndef __EMSCRIPTEN__
         std::this_thread::yield();
 #endif
     }
-}
-
-void Sort::delay(unsigned int millis, bool track_in_stats) {
-    if (millis <= 0) return;
-    unsigned int begin = SDL_GetTicks();
-#ifndef __EMSCRIPTEN__
-    SDL_Delay(millis);
-#else
-    emscripten_sleep(millis);
-#endif
-    unsigned int end = SDL_GetTicks();
-    if(track_in_stats) stats.wait += end - begin;
 }
 
 void Sort::start() {
@@ -58,12 +47,12 @@ void Sort::start() {
 }
 
 void Sort::pause() {
-    pausetime = SDL_GetTicks();
+    pausetime = std::chrono::system_clock::now();
     paused = true;
 }
 
 void Sort::unpause() {
-    starttime += SDL_GetTicks() - pausetime;
+    starttime += std::chrono::system_clock::now() - pausetime;
     paused = false;
 }
 
@@ -84,19 +73,17 @@ void Sort::stop() {
 
 void Sort::reset() {
     finished = false;
-    starttime = SDL_GetTicks();
+    starttime = std::chrono::system_clock::now();
     stats.reset();
+    data->stats.reset();
     _reset();
 }
 
 std::ostream& operator<<(std::ostream& o, const Sort::Stats& stats) {
     return o << std::left
         << "steps: " << std::setw(8) << stats.steps
-        << " | elapsed: " << std::setw(8) << (stats.elapsed / 1000.0)
-        << std::setw(19) << "seconds"
-        << "| time waited: " << std::setw(8) << (stats.wait / 1000.0)
-        << " seconds | waited for " << std::setw(8) << (stats.wait / stats.elapsed * 100) 
-        << "% of the time"
+        << " | elapsed: " << std::setw(8) << stats.elapsed.count()
+        << std::setw(19) << " seconds"
         ;
 }
 

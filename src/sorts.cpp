@@ -2,6 +2,8 @@
 #include "sort.hpp"
 #include "sorts.hpp"
 
+#include <iostream>
+
 Sort* Sorts::create(Sorts which, ArrayWrapper *data) {
     #define CASE(X) case X: return new ::X(data); break;
     switch (which)

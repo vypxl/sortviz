@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <algorithm>
 
@@ -13,11 +14,15 @@ void Viz::update() {
     std::ostringstream str;
     str 
         << "Sorting Algorithm: " << Sorts::names[current_sort]
-        << " | Style: " << styleNames[current_style] 
-        << std::endl 
-        << data->stats 
-        << std::endl 
-        << sort->stats;
+        << " | Style: " << styleNames[current_style]
+        << std::endl
+        << data->stats
+        << std::endl
+        << sort->stats
+        << "| time waited: " << std::setw(8) << data->stats.waited.count()
+        << " seconds | waited for " << std::setw(8) << (data->stats.waited / sort->stats.elapsed) * 100
+        << "% of the time"
+        ;
 
     infotext = str.str();
 #ifdef __EMSCRIPTEN__
