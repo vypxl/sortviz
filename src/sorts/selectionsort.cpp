@@ -1,7 +1,5 @@
 #include "sorts.hpp"
 
-#include <iostream>
-
 SelectionSort::SelectionSort(ArrayWrapper *ary) : Sort(ary) {
     ary->get_delay = [](int data_size) { return 1000000.0 / (data_size * data_size); };
 }

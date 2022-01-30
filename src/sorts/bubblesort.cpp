@@ -24,6 +24,6 @@ void BubbleSort::step() {
 
 void BubbleSort::_reset() {
     swapped = true;
-    n = data->size();
+    n = data->size() - 1;
 }
 
