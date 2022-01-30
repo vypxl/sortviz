@@ -48,9 +48,13 @@ private:
 
         /* Set new style display name here */
     };
-
+#ifdef __EMSCRIPTEN__
+    static const int dataSizesCount = 6;
+    const int dataSizes[dataSizesCount] { 16, 256, 1000, 5000, 50000, 500000 };
+#else
     static const int dataSizesCount = 7;
     const int dataSizes[dataSizesCount] { 16, 256, 1000, 5000, 50000, 500000, 1000000 };
+#endif
 
     ArrayWrapper *data = nullptr;
     bool running = false;
