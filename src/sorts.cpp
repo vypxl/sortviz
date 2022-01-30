@@ -10,6 +10,7 @@ Sort* Sorts::create(Sorts which, ArrayWrapper *data) {
     {
         CASE(SelectionSort)
         CASE(BubbleSort)
+        CASE(InsertionSort)
         CASE(QuickSort)
         /* Also register new sort here */
     

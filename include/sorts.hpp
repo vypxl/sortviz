@@ -44,6 +44,16 @@ public:
     QuickSort(ArrayWrapper *ary);
 };
 
+class InsertionSort : public Sort {
+private:
+  int idx = 0;
+protected:
+  void step();
+  void _reset();
+public:
+  InsertionSort(ArrayWrapper *ary);
+};
+
 
 /* Add new Sort definition here*/
 
@@ -52,6 +62,7 @@ namespace Sorts {
     enum Sorts {
         SelectionSort,
         BubbleSort,
+        InsertionSort,
         QuickSort,
 
         /* Register new sort here */
@@ -60,9 +71,10 @@ namespace Sorts {
         __count_
     };
 
-    const std::string names[3] {
+    const std::string names[4] {
         "Selection Sort",
         "Bubble Sort",
+        "Insertion Sort",
         "Quick Sort",
 
         /* Set new sort display name here */
