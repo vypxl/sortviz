@@ -17,10 +17,14 @@ Sort::~Sort() { }
 
 #ifdef __EMSCRIPTEN__
 void Sort::em_tick() {
-    if (!finished && !paused)
-        stats.elapsed = std::chrono::system_clock::now() - starttime;
+    auto tick_begin = std::chrono::system_clock::now();
 
-    if (!paused) step();
+    while (std::chrono::system_clock::now() - tick_begin < std::chrono::milliseconds(15)) {
+        if (!finished && !paused)
+            stats.elapsed = std::chrono::system_clock::now() - starttime;
+
+        if (!paused) step();
+    }
 }
 #endif
 

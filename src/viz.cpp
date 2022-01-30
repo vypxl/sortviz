@@ -108,7 +108,7 @@ int Viz::init() {
     // Initialize VBOs
     glGenBuffers(1, &dataBuffer);
     glGenBuffers(1, &indexBuffer);
-    
+
     // Initialize data, sort and style
     setDataSize(dataSizes[current_data_size]);
     changeStyle(Styles::Varietyloop);
